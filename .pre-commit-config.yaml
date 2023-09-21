@@ -1,0 +1,62 @@
+repos:
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.3.0
+  hooks:
+  - id: end-of-file-fixer
+  - id: trailing-whitespace
+  - id: check-docstring-first
+  - id: check-merge-conflict
+  - id: detect-private-key
+  - id: mixed-line-ending
+  - id: check-added-large-files
+    exclude: lg_django/topics/fixtures/fixtures.json
+- repo: https://github.com/psf/black
+  rev: 22.6.0
+  hooks:
+  - id: black
+    args:
+    - --line-length=120
+#- repo: https://github.com/Lucas-C/pre-commit-hooks-safety
+#  rev: v1.3.0
+#  hooks:
+#  - id: python-safety-dependencies-check
+
+#- repo: https://github.com/PyCQA/bandit
+#  rev: 1.7.4
+#  hooks:
+#  - id: bandit
+#    args: [--skip, B608, --configfile, bandit.yaml]
+
+- repo: https://github.com/PyCQA/flake8
+  rev: 5.0.4
+  hooks:
+  - id: flake8
+    args:
+    - --max-line-length=120
+    - --ignore=BLK100  # ignore "Black would make changes"
+    additional_dependencies:
+    - flake8-docstrings
+    - flake8-black
+    - flake8-bugbear
+    - flake8-django
+    - flake8-pytest-style
+
+# TODO: Fix isort.
+#- repo: https://github.com/pycqa/isort
+#  rev: 5.10.1
+#  hooks:
+#  - id: isort
+#    entry: isort --profile=black
+
+- repo: https://github.com/codespell-project/codespell
+  rev: v2.1.0
+  hooks:
+  - id: codespell
+    args: [--skip, '*fixtures/*csv', --skip, '*fixtures/*json', --skip, '*src/opensubtitles/languages.py']
+
+
+#- repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
+#  rev: v2.4.0
+#  hooks:
+#  - id: pretty-format-yaml
+#    args: [--autofix, --indent, '2']

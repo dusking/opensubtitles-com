@@ -122,9 +122,7 @@ except NameError:  # `file` doesn't exist in Python 3
 @functools.total_ordering
 class Subtitle(object):
     r"""
-    The metadata relating to a single subtitle. Subtitles are sorted by start
-    time by default. If no index was provided, index 0 will be used on writing
-    an SRT block.
+    The metadata relating to a single subtitle. Subtitles are sorted by start time by default.
 
     :param index: The SRT index for this subtitle
     :type index: int or None
@@ -141,6 +139,19 @@ class Subtitle(object):
 
     # pylint: disable=R0913
     def __init__(self, index, start, end, content, proprietary=""):
+        """
+        Initialize a SubtitleEntry object with the provided data.
+
+        Args:
+            index (int): The index of the subtitle entry.
+            start (str): The start time of the subtitle entry.
+            end (str): The end time of the subtitle entry.
+            content (str): The content of the subtitle entry.
+            proprietary (str, optional): Proprietary information associated with the subtitle entry.
+
+        Returns:
+            None
+        """
         self.index = index
         self.start = start
         self.end = end
@@ -148,12 +159,36 @@ class Subtitle(object):
         self.proprietary = proprietary
 
     def __hash__(self):
+        """
+        Compute the hash value for the SubtitleEntry object based on its attributes.
+
+        Returns:
+            int: The hash value of the object.
+        """
         return hash(frozenset(vars(self).items()))
 
     def __eq__(self, other):
+        """
+        Compare two SubtitleEntry objects for equality based on their attributes.
+
+        Args:
+            other (SubtitleEntry): The other SubtitleEntry object to compare to.
+
+        Returns:
+            bool: True if the objects are equal, False otherwise.
+        """
         return vars(self) == vars(other)
 
     def __lt__(self, other):
+        """
+        Compare two SubtitleEntry objects to determine their relative order.
+
+        Args:
+            other (SubtitleEntry): The other SubtitleEntry object to compare to.
+
+        Returns:
+            bool: True if self is less than other, False otherwise.
+        """
         return (self.start, self.end, self.index) < (
             other.start,
             other.end,
@@ -161,10 +196,19 @@ class Subtitle(object):
         )
 
     def __repr__(self):
+        """
+        Return a string representation of the SubtitleEntry object.
+
+        Returns:
+            str: A string representation of the object.
+        """
         # Python 2/3 cross compatibility
-        var_items = getattr(vars(self), "iteritems", getattr(vars(self), "items"))
-        item_list = ", ".join("%s=%r" % (k, v) for k, v in var_items())
+        var_items = vars(self).items() if hasattr(vars(self), "items") else vars(self).iteritems()
+        item_list = ", ".join("%s=%r" % (k, v) for k, v in var_items)
         return "%s(%s)" % (type(self).__name__, item_list)
+        # var_items = getattr(vars(self), "iteritems", getattr(vars(self), "items"))
+        # item_list = ", ".join("%s=%r" % (k, v) for k, v in var_items())
+        # return "%s(%s)" % (type(self).__name__, item_list)
 
     def to_srt(self, strict=True, eol="\n"):
         r"""
@@ -207,8 +251,9 @@ class Subtitle(object):
 
 def make_legal_content(content):
     r"""
-    Remove illegal content from a content block. Illegal content includes:
+    Remove illegal content from a content block.
 
+    Illegal content includes:
     * Blank lines
     * Starting or ending with a blank line
 
@@ -248,7 +293,6 @@ def timedelta_to_srt_timestamp(timedelta_timestamp):
     :returns: The timestamp in SRT format
     :rtype: str
     """
-
     hrs, secs_remainder = divmod(timedelta_timestamp.seconds, SECONDS_IN_HOUR)
     hrs += timedelta_timestamp.days * HOURS_IN_DAY
     mins, secs = divmod(secs_remainder, SECONDS_IN_MINUTE)
@@ -270,18 +314,18 @@ def srt_timestamp_to_timedelta(timestamp):
     :rtype: datetime.timedelta
     :raises TimestampParseError: If the timestamp is not parseable
     """
-
     match = TS_REGEX.match(timestamp)
     if match is None:
-        raise TimestampParseError("Unparseable timestamp: {}".format(timestamp))
+        raise TimestampParseError("Unparsable timestamp: {}".format(timestamp))
     hrs, mins, secs, msecs = [int(m) if m else 0 for m in match.groups()]
     return timedelta(hours=hrs, minutes=mins, seconds=secs, milliseconds=msecs)
 
 
 def sort_and_reindex(subtitles, start_index=1, in_place=False, skip=True):
     """
-    Reorder subtitles to be sorted by start time order, and rewrite the indexes
-    to be in that same order. This ensures that the SRT file will play in an
+    Reorder subtitles to be sorted by start time order, and rewrite the indexes to be in that same order.
+
+    This ensures that the SRT file will play in an
     expected fashion after, for example, times were changed in some subtitles
     and they may need to be resorted.
 
@@ -327,9 +371,7 @@ def sort_and_reindex(subtitles, start_index=1, in_place=False, skip=True):
                 if subtitle.index is None:
                     LOG.info("Skipped subtitle with no index: %s", thrown_exc)
                 else:
-                    LOG.info(
-                        "Skipped subtitle at index %d: %s", subtitle.index, thrown_exc
-                    )
+                    LOG.info("Skipped subtitle at index %d: %s", subtitle.index, thrown_exc)
                 skipped_subs += 1
                 continue
 
@@ -340,8 +382,7 @@ def sort_and_reindex(subtitles, start_index=1, in_place=False, skip=True):
 
 def _should_skip_sub(subtitle):
     """
-    Check if a subtitle should be skipped based on the rules in
-    SUBTITLE_SKIP_CONDITIONS.
+    Check if a subtitle should be skipped based on the rules in SUBTITLE_SKIP_CONDITIONS.
 
     :param subtitle: A :py:class:`Subtitle` to check whether to skip
     :raises _ShouldSkipException: If the subtitle should be skipped
@@ -353,8 +394,7 @@ def _should_skip_sub(subtitle):
 
 def parse(srt, ignore_errors=False, content_replace=None):
     r'''
-    Convert an SRT formatted string (in Python 2, a :class:`unicode` object) to
-    a :term:`generator` of Subtitle objects.
+    Convert an SRT formatted string (in Python 2, a :class:`unicode` object) to a :term:`generator` of Subtitle objects.
 
     This function works around bugs present in many SRT files, most notably
     that it is designed to not bork when presented with a blank line as part of
@@ -387,7 +427,6 @@ def parse(srt, ignore_errors=False, content_replace=None):
     :raises SRTParseError: If the matches are not contiguous and
                            ``ignore_errors`` is False.
     '''
-
     expected_start = 0
 
     # Transparently read files -- the whole thing is needed for regex's
@@ -437,6 +476,8 @@ def parse(srt, ignore_errors=False, content_replace=None):
 
 def _check_contiguity(srt, expected_start, actual_start, warn_only):
     """
+    Check contiguity.
+
     If ``warn_only`` is False, raise :py:class:`SRTParseError` with diagnostic
     info if expected_start does not equal actual_start. Otherwise, log a
     warning.
@@ -452,25 +493,20 @@ def _check_contiguity(srt, expected_start, actual_start, warn_only):
     if expected_start != actual_start:
         unmatched_content = srt[expected_start:actual_start]
 
-        if expected_start == 0 and (
-            unmatched_content.isspace() or unmatched_content == "\ufeff"
-        ):
+        if expected_start == 0 and (unmatched_content.isspace() or unmatched_content == "\ufeff"):
             # #50: Leading whitespace has nowhere to be captured like in an
             # intermediate subtitle
             return
 
         if warn_only:
-            LOG.warning("Skipped unparseable SRT data: %r", unmatched_content)
+            LOG.warning("Skipped Unparsable SRT data: %r", unmatched_content)
         else:
             raise SRTParseError(expected_start, actual_start, unmatched_content)
 
 
-def compose(
-    subtitles, reindex=True, start_index=1, strict=True, eol=None, in_place=False
-):
+def compose(subtitles, reindex=True, start_index=1, strict=True, eol=None, in_place=False):
     r"""
-    Convert an iterator of :py:class:`Subtitle` objects to a string of joined
-    SRT blocks.
+    Convert an iterator of :py:class:`Subtitle` objects to a string of joined SRT blocks.
 
     .. doctest::
 
@@ -498,9 +534,7 @@ def compose(
     :rtype: str
     """
     if reindex:
-        subtitles = sort_and_reindex(
-            subtitles, start_index=start_index, in_place=in_place
-        )
+        subtitles = sort_and_reindex(subtitles, start_index=start_index, in_place=in_place)
 
     return "".join(subtitle.to_srt(strict=strict, eol=eol) for subtitle in subtitles)
 
@@ -516,10 +550,20 @@ class SRTParseError(Exception):
     """
 
     def __init__(self, expected_start, actual_start, unmatched_content):
+        """
+        Initialize an SRTParseError exception.
+
+        Args:
+            expected_start (int): The expected starting character position.
+            actual_start (int): The actual starting character position.
+            unmatched_content (str): The unmatched content encountered.
+
+        Raises:
+            SRTParseError: An exception indicating a parsing error in an SRT subtitle file.
+        """
         message = (
             "Expected contiguous start of match or end of input at char %d, "
-            "but started at char %d (unmatched content: %r)"
-            % (expected_start, actual_start, unmatched_content)
+            "but started at char %d (unmatched content: %r)" % (expected_start, actual_start, unmatched_content)
         )
         super(SRTParseError, self).__init__(message)
 
@@ -529,12 +573,8 @@ class SRTParseError(Exception):
 
 
 class TimestampParseError(ValueError):
-    """
-    Raised when an SRT timestamp could not be parsed.
-    """
+    """Raised when an SRT timestamp could not be parsed."""
 
 
 class _ShouldSkipException(Exception):
-    """
-    Raised when a subtitle should be skipped.
-    """
+    """Raised when a subtitle should be skipped."""

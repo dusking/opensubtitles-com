@@ -1,10 +1,15 @@
+"""
+This is the setup module for the opensubtitles wrapper.
+
+It contains the configuration and metadata required for packaging and distributing the project.
+"""
+
 from typing import List
 from setuptools import setup, find_packages
 
-from version_helpers import version
 
 def parse_requirements(filename) -> List[str]:
-    """ load requirements from a pip requirements file """
+    """Load requirements from a pip requirements file."""
     lineiter = (line.strip() for line in open(filename))
     return [line for line in lineiter if line and not line.startswith("#")]
 
@@ -14,7 +19,7 @@ requirements = [str(ir) for ir in install_reqs]
 
 setup_kwargs = dict(
     name="opensubtitles",
-    version=version(),
+    version="0.0.1",
     license="LICENSE",
     platforms="All",
     description="OpenSubtitles.com new REST API",

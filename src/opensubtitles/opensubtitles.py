@@ -1,17 +1,37 @@
-import os
+"""
+Copyright (c) 2023 Omer Duskin.
+
+This file is part of Opensubtitles API wrapper.
+
+Opensubtitles API is free software: you can redistribute it and/or modify
+it under the terms of the MIT License as published by the Massachusetts
+Institute of Technology.
+
+For full details, please see the LICENSE file located in the root
+directory of this project.
+
+This is the main module for the opensubtitles wrapper.
+It contains wrpper functoins for the opensubtitles.com REST API.
+"""
+
 import json
 import uuid
 import logging
 import requests
 from pathlib import Path
-from collections import Counter
 
 from typing import Literal, Union, Optional
 
 from .srt import parse
 from .files import write
 from .exceptions import OpenSubtitlesException
-from .responses import SearchResponse, DownloadResponse, Subtitle, DiscoverLatestResponse, DiscoverMostDownloadedResponse
+from .responses import (
+    SearchResponse,
+    DownloadResponse,
+    Subtitle,
+    DiscoverLatestResponse,
+    DiscoverMostDownloadedResponse,
+)
 from .download_client import DownloadClient
 from .languages import language_codes
 
@@ -19,11 +39,11 @@ logger = logging.getLogger(__name__)
 
 
 class OpenSubtitles:
-    """
-    OpenSubtitles REST API Wrapper.
-    """
+    """OpenSubtitles REST API Wrapper."""
+
     def __init__(self, api_key: str, user_agent: Optional[str] = None):
-        """
+        """Initialize the OpenSubtitles object.
+
         :param api_key:
         :param user_agent: a string representing the user agent, like: "MyApp v0.0.1"
         """
@@ -34,17 +54,15 @@ class OpenSubtitles:
         self.user_agent = user_agent or "MyApp v0.0.1"
         self.downloads_dir = "."
 
-    def send_api(self, cmd: str,
-                 body: Optional[dict] = None,
-                 method: Union[str, Literal["GET", "POST", "DELETE"]] = None) -> dict:
-        """
-        Wrapper to the API request.
-        """
+    def send_api(
+        self, cmd: str, body: Optional[dict] = None, method: Union[str, Literal["GET", "POST", "DELETE"]] = None
+    ) -> dict:
+        """Send the API request."""
         headers = {
             "Accept": "application/json",
             "Content-Type": "application/json",
             "API-Key": self.api_key,
-            "User-Agent": self.user_agent
+            "User-Agent": self.user_agent,
         }
         if self.token:
             headers["authorization"] = self.token
@@ -71,10 +89,10 @@ class OpenSubtitles:
 
         Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/73acf79accc0a-login
         """
-        body = {'username': username, 'password': password}
+        body = {"username": username, "password": password}
         login_response = self.send_api("login", body)
-        self.token = login_response['token']
-        self.user_downloads_remaining = login_response['user']['allowed_downloads']
+        self.token = login_response["token"]
+        self.user_downloads_remaining = login_response["user"]["allowed_downloads"]
         return login_response
 
     def logout(self, username: str, password: str):
@@ -93,7 +111,7 @@ class OpenSubtitles:
         Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/ea912bb244ef0-user-informations
         """
         response = self.send_api("infos/user")
-        self.user_downloads_remaining = response['data']['remaining_downloads']
+        self.user_downloads_remaining = response["data"]["remaining_downloads"]
         return response
 
     def languages_info(self):
@@ -123,9 +141,9 @@ class OpenSubtitles:
         response = self.send_api("discover/latest")
         return DiscoverLatestResponse(**response)
 
-    def discover_most_downloaded(self,
-                                 languages: Optional[str] = None,
-                                 type: Union[str, Literal["movie", "tvshow"]] = None):
+    def discover_most_downloaded(
+        self, languages: Optional[str] = None, type: Union[str, Literal["movie", "tvshow"]] = None
+    ):
         """
         Get popular subtitles, according to last 30 days downloads on opensubtitles.com.
 
@@ -134,31 +152,33 @@ class OpenSubtitles:
         response = self.send_api("discover/most_downloaded")
         return DiscoverMostDownloadedResponse(**response)
 
-    def search(self, *,
-               ai_translated: Union[str, Literal["exclude", "include"]]  = None,
-               episode_number: Optional[int] = None,
-               foreign_parts_only: Union[str, Literal["exclude", "include"]]  = None,
-               hearing_impaired: Union[str, Literal["exclude", "include"]]  = None,
-               id: Optional[int] = None,
-               imdb_id: Optional[int] = None,
-               languages: Optional[str] = None,
-               machine_translated: Union[str, Literal["exclude", "include"]]  = None,
-               moviehash: Optional[str] = None,
-               moviehash_match: Union[str, Literal["include", "only"]]  = None,
-               order_by: Optional[str] = None,
-               order_direction: Union[str, Literal["asc", "desc"]]  = None,
-               page: Optional[int] = None,
-               parent_feature_id: Optional[int] = None,
-               parent_imdb_id: Optional[int] = None,
-               parent_tmdb_id: Optional[int] = None,
-               query: Optional[str] = None,
-               season_number: Optional[int] = None,
-               tmdb_id: Optional[int] = None,
-               trusted_sources: Union[str, Literal["include", "only"]]  = None,
-               type: Union[str, Literal["movie", "episode", "all"]]  = None,
-               user_id: Optional[int] = None,
-               year: Optional[int] = None,
-               ) -> SearchResponse:
+    def search(
+        self,
+        *,
+        ai_translated: Union[str, Literal["exclude", "include"]] = None,
+        episode_number: Optional[int] = None,
+        foreign_parts_only: Union[str, Literal["exclude", "include"]] = None,
+        hearing_impaired: Union[str, Literal["exclude", "include"]] = None,
+        id: Optional[int] = None,
+        imdb_id: Optional[int] = None,
+        languages: Optional[str] = None,
+        machine_translated: Union[str, Literal["exclude", "include"]] = None,
+        moviehash: Optional[str] = None,
+        moviehash_match: Union[str, Literal["include", "only"]] = None,
+        order_by: Optional[str] = None,
+        order_direction: Union[str, Literal["asc", "desc"]] = None,
+        page: Optional[int] = None,
+        parent_feature_id: Optional[int] = None,
+        parent_imdb_id: Optional[int] = None,
+        parent_tmdb_id: Optional[int] = None,
+        query: Optional[str] = None,
+        season_number: Optional[int] = None,
+        tmdb_id: Optional[int] = None,
+        trusted_sources: Union[str, Literal["include", "only"]] = None,
+        type: Union[str, Literal["movie", "episode", "all"]] = None,
+        user_id: Optional[int] = None,
+        year: Optional[int] = None,
+    ) -> SearchResponse:
         """
         Search for subtitles.
 
@@ -198,31 +218,33 @@ class OpenSubtitles:
 
         if languages is not None:
             assert languages in language_codes, f"Invalid language code: {languages}"
-        assert query_params, f"Missing subtitles search parameters"
+        assert query_params, "Missing subtitles search parameters"
         query_string = "&".join(query_params)
 
         search_response_data = self.send_api(f"subtitles?{query_string}")
-        search_result = SearchResponse(**search_response_data, query_string=query_string)
-        return search_result
+        return SearchResponse(**search_response_data, query_string=query_string)
 
-    def download(self, file_id: Union[str, Subtitle],
-                 sub_format: Optional[int] = None,
-                 file_name: Optional[int] = None,
-                 in_fps: Optional[int] = None,
-                 out_fps: Optional[int] = None,
-                 timeshift: Optional[int] = None,
-                 force_download: Optional[bool] = None) -> bytes:
+    def download(
+        self,
+        file_id: Union[str, Subtitle],
+        sub_format: Optional[int] = None,
+        file_name: Optional[int] = None,
+        in_fps: Optional[int] = None,
+        out_fps: Optional[int] = None,
+        timeshift: Optional[int] = None,
+        force_download: Optional[bool] = None,
+    ) -> bytes:
         """
         Download a single subtitle file using the file_no.
 
         Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/6be7f6ae2d918-download
         """
-        subtitle_id = subtitle.file_id if isinstance(subtitle, Subtitle) else subtitle
+        subtitle_id = file_id.file_id if isinstance(file_id, Subtitle) else file_id
         if not subtitle_id:
-            logger.warning(f"Missing subtitle file id.")
+            logger.warning("Missing subtitle file id.")
             return
 
-        download_body = {'file_id': subtitle_id}
+        download_body = {"file_id": subtitle_id}
 
         # Helper function to add a parameter to the query_params list
         def add_param(name, value):
@@ -237,36 +259,79 @@ class OpenSubtitles:
         add_param("force_download", force_download)
 
         if self.user_downloads_remaining <= 0:
-            logger.warning("Download limit reached. "
-                           "Please upgrade your account or wait for your quota to reset (~24hrs)")
+            logger.warning(
+                "Download limit reached. " "Please upgrade your account or wait for your quota to reset (~24hrs)"
+            )
             return
 
-        search_response_data = DownloadResponse(self.send_api(f"download", download_body))
+        search_response_data = DownloadResponse(self.send_api("download", download_body))
         self.user_downloads_remaining = search_response_data.remaining
 
-        content = self.download_client.get(search_response_data.link)
-        return content
+        return self.download_client.get(search_response_data.link)
 
     def save_content_locally(self, content: bytes, filename: Optional[str] = None) -> str:
-        local_filename = f'{filename or uuid.uuid4()}.srt'
+        """
+        Save content locally.
+
+        :param content: content of dubtitle file.
+        :param filename:  target local filename.
+        :return: the path of the local file containing the content.
+        """
+        local_filename = f"{filename or uuid.uuid4()}.srt"
         srt_path = Path(self.downloads_dir).joinpath(local_filename)
         write(srt_path, content)
         return srt_path
 
-    def download_and_save(self, subtitle: Union[str, Subtitle]) -> str:
-        content = self.download(subtitle)
+    def download_and_save(self, file_id: Union[str, Subtitle], **kwargs) -> str:
+        """Call the download function to get rge subtitle content, then save the content to a local file.
+
+        :param file_id: file_id or subtitles object.
+        :return: local file path.
+        """
+        subtitle_id = file_id.file_id if isinstance(file_id, Subtitle) else file_id
+        content = self.download(subtitle_id, **kwargs)
+        if not content:
+            logger.warning(f"Failed to get content for: {file_id}")
+            return
         return self.save_content_locally(content, subtitle_id)
 
     def parse_srt(self, content):
+        """
+        Parse subtitles in SRT format.
+
+        Args:
+            content (str): The content of the subtitles SRT file.
+
+        Returns:
+            list: A list of parsed subtitle entries.
+        """
         parsed_content = parse(content)
         return list(parsed_content)
 
     def bytes_to_str(self, content: bytes) -> str:
+        """
+        Convert bytes content to a string.
+
+        Args:
+            content (bytes): The bytes content to be converted.
+
+        Returns:
+            str: The content as a UTF-8 encoded string.
+        """
         if isinstance(content, bytes):
             content = content.decode("utf-8")
         return content
 
     def str_to_bytes(self, content: str) -> bytes:
+        """
+        Convert string content to bytes.
+
+        Args:
+            content (str): The string content to be converted.
+
+        Returns:
+            bytes: The content as bytes, encoded in UTF-8.
+        """
         if isinstance(content, str):
             content = content.decode("utf-8")
         return content

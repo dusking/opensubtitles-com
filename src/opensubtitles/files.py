@@ -1,15 +1,21 @@
 """
-Convenient File handling utilities.
+Copyright (c) 2023 Omer Duskin.
 
-This module has some file handling functions.
+This file is part of Opensubtitles API wrapper.
+
+Opensubtitles API is free software: you can redistribute it and/or modify
+it under the terms of the MIT License as published by the Massachusetts
+Institute of Technology.
+
+For full details, please see the LICENSE file located in the root
+directory of this project.
 """
 
 from pathlib import Path
 
 
 def write(path: Path, content: bytes) -> None:
-    """
-    Utility function to write bytes to a file Path.
+    """Write bytes to a file Path.
 
     Args:
         path: The Path of the file.
@@ -22,8 +28,7 @@ def write(path: Path, content: bytes) -> None:
 
 
 def delete(path: Path) -> None:
-    """
-    Utility function to delete a file Path.
+    """Delete a file Path.
 
     Args:
         path: The Path of the file.
@@ -35,8 +40,7 @@ def delete(path: Path) -> None:
 
 
 def exists(path: Path) -> bool:
-    """
-    Utility function to confirm whether a file Path exists or not.
+    """Confirm whether a file Path exists or not.
 
     Args:
         path: The Path of the file.
