@@ -30,7 +30,12 @@ setup_kwargs = dict(
     include_package_data=True,
     install_requires=requirements,
     python_requires=">=3.8",
-    url='https://github.com/dusking/opensubtitles-com.git',
+    url="https://github.com/dusking/opensubtitles-com.git",
+    classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+    ],
 )
 
 setup(**setup_kwargs)

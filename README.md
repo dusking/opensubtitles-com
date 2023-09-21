@@ -5,7 +5,7 @@
 ![Python](https://img.shields.io/pypi/pyversions/opensubtitlescom)
 
 A Python wrapper for the OpenSubtitles REST API, providing easy access to subtitle data.
-This library allows you to interact with OpenSubtitles.com programmatically, 
+This library allows you to interact with OpenSubtitles.com programmatically,
 making it simple to search for and download subtitles for your favorite movies and TV shows.
 
 ## Installation
@@ -26,8 +26,8 @@ pip install git+ssh://git@github.com/dusking/opensubtitles-com.git --upgrade
 
 ## Usage
 
-Using this wrapper is straightforward. 
-It follows the OpenSubtitles API documentation closely and converts responses into Python objects. 
+Using this wrapper is straightforward.
+It follows the OpenSubtitles API documentation closely and converts responses into Python objects.
 Here's an example of how to use it:
 
 ```python
@@ -50,7 +50,7 @@ print(response_dict)
 subtitles.download_and_save(response.data[0])
 ```
 
-For more information on available methods and options, 
+For more information on available methods and options,
 refer to the [OpenSubtitles API documentation](https://opensubtitles.stoplight.io/).
 
 ## Contributing
