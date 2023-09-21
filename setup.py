@@ -17,7 +17,7 @@ def parse_requirements(filename) -> List[str]:
 install_reqs = parse_requirements("requirements.txt")
 requirements = [str(ir) for ir in install_reqs]
 
-version = "0.0.1"
+version = "0.0.2"
 
 setup_kwargs = dict(
     name="opensubtitlescom",
