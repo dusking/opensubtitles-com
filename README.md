@@ -13,8 +13,12 @@ pip install git+ssh://git@github.com/dusking/opensubtitles-api.git --upgrade
 
 ## Usage
 
-The following is a simple example:
+The OpenSubtitles methods are based on the documentation: https://opensubtitles.stoplight.io/
 
+The responses are converted to python objects. All the response objects supports `.to_dict()` option,
+to present the entire dict content.
+
+Exampl usage:
 ```python
 from opensubtitles import OpenSubtitles
 
@@ -22,6 +26,7 @@ subtitles = OpenSubtitles(MY_API_KEY)
 subtitles.login(MY_USERNAME, MY_PASSWORD)
 
 response = subtitles.search(query="one of us is lying", season_number=1, episode_number=1, languages="en")
+print(response.to_dict())
 subtitles.download_and_save(response.data[0])
 ```
 

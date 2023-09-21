@@ -11,39 +11,32 @@ from typing import Literal, Union, Optional
 from .srt import parse
 from .files import write
 from .exceptions import OpenSubtitlesException
-from .responses import SearchResult, DownloadResponse, Subtitle
+from .responses import SearchResponse, DownloadResponse, Subtitle, DiscoverLatestResponse, DiscoverMostDownloadedResponse
 from .download_client import DownloadClient
+from .languages import language_codes
 
 logger = logging.getLogger(__name__)
-
-language_codes = {
-    "en": "English",
-    "es": "Spanish",
-    "fr": "French",
-    "de": "German",
-    "it": "Italian",
-    "zh": "Chinese",
-    "ja": "Japanese",
-    "ru": "Russian",
-    "ar": "Arabic",
-    "hi": "Hindi",
-    "he": "Hebrew",
-}
 
 
 class OpenSubtitles:
     """
     OpenSubtitles REST API Wrapper.
     """
-    def __init__(self, api_key: str):
+    def __init__(self, api_key: str, user_agent: Optional[str] = None):
+        """
+        :param api_key:
+        :param user_agent: a string representing the user agent, like: "MyApp v0.0.1"
+        """
         self.download_client = DownloadClient()
         self.base_url = "https://api.opensubtitles.com/api/v1"
         self.token = None
         self.api_key = api_key
-        self.user_agent = "duolex v0.0.1"
+        self.user_agent = user_agent or "MyApp v0.0.1"
         self.downloads_dir = "."
 
-    def send_api(self, cmd: str, body: Optional[dict] = None) -> dict:
+    def send_api(self, cmd: str,
+                 body: Optional[dict] = None,
+                 method: Union[str, Literal["GET", "POST", "DELETE"]] = None) -> dict:
         """
         Wrapper to the API request.
         """
@@ -56,7 +49,9 @@ class OpenSubtitles:
         if self.token:
             headers["authorization"] = self.token
         try:
-            if body:
+            if method == "DELETE":
+                response = requests.delete(f"{self.base_url}/{cmd}", headers=headers)
+            elif body:
                 response = requests.post(f"{self.base_url}/{cmd}", data=json.dumps(body), headers=headers)
             else:
                 response = requests.get(f"{self.base_url}/{cmd}", headers=headers)
@@ -73,6 +68,8 @@ class OpenSubtitles:
     def login(self, username: str, password: str):
         """
         Login request - needed to obtain session token.
+
+        Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/73acf79accc0a-login
         """
         body = {'username': username, 'password': password}
         login_response = self.send_api("login", body)
@@ -80,13 +77,62 @@ class OpenSubtitles:
         self.user_downloads_remaining = login_response['user']['allowed_downloads']
         return login_response
 
+    def logout(self, username: str, password: str):
+        """
+        Destroy a user token to end a session.
+
+        Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/9fe4d6d078e50-logout
+        """
+        response = self.send_api("logout", method="DELETE")
+        return response
+
     def user_info(self):
         """
         Get user data.
+
+        Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/ea912bb244ef0-user-informations
         """
         response = self.send_api("infos/user")
         self.user_downloads_remaining = response['data']['remaining_downloads']
         return response
+
+    def languages_info(self):
+        """
+        Get the languages information.
+
+        Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/1de776d20e873-languages
+        """
+        response = self.send_api("infos/languages")
+        return response
+
+    def formats_info(self):
+        """
+        Get the languages information.
+
+        Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/69b286fc7506e-subtitle-formats
+        """
+        response = self.send_api("infos/formats")
+        return response
+
+    def discover_latest(self):
+        """
+        Get 60 latest uploaded subtitles.
+
+        Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/f36cef28efaa9-latest-subtitles
+        """
+        response = self.send_api("discover/latest")
+        return DiscoverLatestResponse(**response)
+
+    def discover_most_downloaded(self,
+                                 languages: Optional[str] = None,
+                                 type: Union[str, Literal["movie", "tvshow"]] = None):
+        """
+        Get popular subtitles, according to last 30 days downloads on opensubtitles.com.
+
+        Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/3a149b956fcab-most-downloaded-subtitles
+        """
+        response = self.send_api("discover/most_downloaded")
+        return DiscoverMostDownloadedResponse(**response)
 
     def search(self, *,
                ai_translated: Union[str, Literal["exclude", "include"]]  = None,
@@ -112,7 +158,7 @@ class OpenSubtitles:
                type: Union[str, Literal["movie", "episode", "all"]]  = None,
                user_id: Optional[int] = None,
                year: Optional[int] = None,
-               ) -> SearchResult:
+               ) -> SearchResponse:
         """
         Search for subtitles.
 
@@ -156,12 +202,20 @@ class OpenSubtitles:
         query_string = "&".join(query_params)
 
         search_response_data = self.send_api(f"subtitles?{query_string}")
-        search_result = SearchResult(**search_response_data, query_string=query_string)
+        search_result = SearchResponse(**search_response_data, query_string=query_string)
         return search_result
 
-    def download(self, subtitle: Union[str, Subtitle]) -> bytes:
+    def download(self, file_id: Union[str, Subtitle],
+                 sub_format: Optional[int] = None,
+                 file_name: Optional[int] = None,
+                 in_fps: Optional[int] = None,
+                 out_fps: Optional[int] = None,
+                 timeshift: Optional[int] = None,
+                 force_download: Optional[bool] = None) -> bytes:
         """
-        download a single subtitle file using the file_no
+        Download a single subtitle file using the file_no.
+
+        Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/6be7f6ae2d918-download
         """
         subtitle_id = subtitle.file_id if isinstance(subtitle, Subtitle) else subtitle
         if not subtitle_id:
@@ -170,7 +224,19 @@ class OpenSubtitles:
 
         download_body = {'file_id': subtitle_id}
 
-        if self.user_downloads_remaining == 0:
+        # Helper function to add a parameter to the query_params list
+        def add_param(name, value):
+            if value is not None:
+                download_body[name] = value
+
+        add_param("sub_format", sub_format)
+        add_param("file_name", file_name)
+        add_param("in_fps", in_fps)
+        add_param("out_fps", out_fps)
+        add_param("timeshift", timeshift)
+        add_param("force_download", force_download)
+
+        if self.user_downloads_remaining <= 0:
             logger.warning("Download limit reached. "
                            "Please upgrade your account or wait for your quota to reset (~24hrs)")
             return

@@ -1,5 +1,6 @@
-import functools
 import logging
+import functools
+from datetime import datetime
 
 logger = logging.getLogger(__name__)
 
@@ -70,7 +71,7 @@ class BaseResponse:
             if jsonify:
                 value = ast.literal_eval(value)
             if to_date_str:
-                str_date_format = str_date_format or "%Y-%m-%dT%H:%M:%S"  # "%d/%m/%YT%H:%M:%S"
+                str_date_format = str_date_format or "%Y-%m-%dT%H:%M:%S"
                 value = value.strftime(str_date_format)
             if to_epoch:
                 value = value.timestamp()
@@ -118,7 +119,7 @@ class BaseResponse:
         return fields_data
 
 
-class SearchResult(BaseResponse):
+class SearchResponse(BaseResponse):
     def __init__(self, total_pages, total_count, per_page, page, data, query_string = None):
         self.total_pages = total_pages
         self.total_count = total_count
@@ -129,6 +130,37 @@ class SearchResult(BaseResponse):
 
     class Meta:
         main_field = "query_string"
+
+
+class DiscoverLatestResponse(BaseResponse):
+    def __init__(self, total_pages, total_count, page, data):
+        self.total_pages = total_pages
+        self.total_count = total_count
+        self.page = page
+        self.data = [Subtitle(item) for item in data]
+        self.created_at = datetime.now()
+        self.created_at_str = self.created_at.strftime("%Y-%m-%d %H:%M%z")
+
+    class Meta:
+        main_field = "created_at_str"
+
+
+class DiscoverMostDownloadedResponse(DiscoverLatestResponse):
+    pass
+
+
+class DownloadResponse(BaseResponse):
+    def __init__(self, response_data):
+        self.link = response_data.get('link')
+        self.file_name = response_data.get('file_name')
+        self.requests = response_data.get('requests')
+        self.remaining = response_data.get('remaining')
+        self.message = response_data.get('message')
+        self.reset_time = response_data.get('reset_time')
+        self.reset_time_utc = response_data.get('reset_time_utc')
+        self.uk = response_data.get('uk')
+        self.uid = response_data.get('uid')
+        self.ts = response_data.get('ts')
 
 
 class Subtitle(BaseResponse):
@@ -177,17 +209,3 @@ class Subtitle(BaseResponse):
 
     class Meta:
         main_field = "release"
-
-
-class DownloadResponse(BaseResponse):
-    def __init__(self, response_data):
-        self.link = response_data.get('link')
-        self.file_name = response_data.get('file_name')
-        self.requests = response_data.get('requests')
-        self.remaining = response_data.get('remaining')
-        self.message = response_data.get('message')
-        self.reset_time = response_data.get('reset_time')
-        self.reset_time_utc = response_data.get('reset_time_utc')
-        self.uk = response_data.get('uk')
-        self.uid = response_data.get('uid')
-        self.ts = response_data.get('ts')
