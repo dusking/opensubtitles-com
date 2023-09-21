@@ -16,8 +16,8 @@ This is the test module for the opensubtitles wrapper.
 import unittest
 from unittest.mock import patch, Mock
 
-from opensubtitles import OpenSubtitles
-from opensubtitles.exceptions import OpenSubtitlesException
+from opensubtitlescom import OpenSubtitles
+from opensubtitlescom.exceptions import OpenSubtitlesException
 
 
 class TestOpenSubtitlesAPI(unittest.TestCase):
@@ -32,7 +32,7 @@ class TestOpenSubtitlesAPI(unittest.TestCase):
         self.api = OpenSubtitles("api-key")
         self.api.download_client = self.mock_download_client
 
-    @patch("opensubtitles.OpenSubtitles.send_api")
+    @patch("opensubtitlescom.OpenSubtitles.send_api")
     def test_successful_login(self, mock_login_req):
         """Test successful login."""
         # Mock the 'login_request' method to simulate a successful login response
@@ -60,7 +60,7 @@ class TestOpenSubtitlesAPI(unittest.TestCase):
         # Assert that the response is as expected
         assert login_response == valid_response
 
-    @patch("opensubtitles.OpenSubtitles.send_api")
+    @patch("opensubtitlescom.OpenSubtitles.send_api")
     def test_failed_login(self, mock_login_req):
         """Test failed login."""
         # Mock the 'login_request' method to simulate a failed login response
@@ -78,7 +78,7 @@ class TestOpenSubtitlesAPI(unittest.TestCase):
             # Assert that the error message contains "Unauthorized"
             assert "Unauthorized" in str(e)
 
-    @patch("opensubtitles.OpenSubtitles.send_api")
+    @patch("opensubtitlescom.OpenSubtitles.send_api")
     def test_search_response_parsing(self, mock_login_req):
         """Test parsing of search response."""
         # Mock the search response data
