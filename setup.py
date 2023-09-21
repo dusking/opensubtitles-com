@@ -17,9 +17,11 @@ def parse_requirements(filename) -> List[str]:
 install_reqs = parse_requirements("requirements.txt")
 requirements = [str(ir) for ir in install_reqs]
 
+version = "0.0.1"
+
 setup_kwargs = dict(
     name="opensubtitlescom",
-    version="0.0.1",
+    version=version,
     license="LICENSE",
     platforms="All",
     description="OpenSubtitles.com new REST API",
@@ -28,6 +30,7 @@ setup_kwargs = dict(
     include_package_data=True,
     install_requires=requirements,
     python_requires=">=3.8",
+    url='https://github.com/dusking/opensubtitles-com.git',
 )
 
 setup(**setup_kwargs)

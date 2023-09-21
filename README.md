@@ -1,36 +1,65 @@
-# Python OpenSubtitles API Wrapper
+# Python OpenSubtitles.com API Wrapper
 
-This is a Python wrapper to the OpenSubtitles REST API,
-As documented in https://opensubtitles.stoplight.io/
+![GitHub](https://img.shields.io/github/license/dusking/opensubtitles-com)
+![PyPI](https://img.shields.io/pypi/v/opensubtitlescom)
+![Python](https://img.shields.io/pypi/pyversions/opensubtitlescom)
+
+A Python wrapper for the OpenSubtitles REST API, providing easy access to subtitle data.
+This library allows you to interact with OpenSubtitles.com programmatically, 
+making it simple to search for and download subtitles for your favorite movies and TV shows.
 
 ## Installation
 
-You can clone and install it locally or use direct install from GitHub.
+You can install the package using `pip` directly from PyPI or by cloning the repository from GitHub.
+
+**Install from PyPI:**
 
 ```bash
-pip install git+ssh://git@github.com/dusking/opensubtitles-api.git --upgrade
+pip install opensubtitlescom
+```
+
+**Install from GitHub (latest development version):**
+
+```bash
+pip install git+ssh://git@github.com/dusking/opensubtitles-com.git --upgrade
 ```
 
 ## Usage
 
-The OpenSubtitles methods are based on the documentation: https://opensubtitles.stoplight.io/
+Using this wrapper is straightforward. 
+It follows the OpenSubtitles API documentation closely and converts responses into Python objects. 
+Here's an example of how to use it:
 
-The responses are converted to python objects. All the response objects supports `.to_dict()` option,
-to present the entire dict content.
-
-Exampl usage:
 ```python
-from opensubtitles import OpenSubtitles
+from opensubtitlescom import OpenSubtitles
 
+# Initialize the OpenSubtitles client
 subtitles = OpenSubtitles(MY_API_KEY)
+
+# Log in (optional but may be required for certain operations)
 subtitles.login(MY_USERNAME, MY_PASSWORD)
 
-response = subtitles.search(query="one of us is lying", season_number=1, episode_number=1, languages="en")
-print(response.to_dict())
+# Search for subtitles
+response = subtitles.search(query="breaking bad", season_number=1, episode_number=1, languages="en")
+
+# Convert the response to a Python dictionary
+response_dict = response.to_dict()
+print(response_dict)
+
+# Save the first result locally
 subtitles.download_and_save(response.data[0])
 ```
 
-## Contributing
-Pull requests are welcome. For major changes, please open an issue first to discuss what you would like to change.
+For more information on available methods and options, 
+refer to the [OpenSubtitles API documentation](https://opensubtitles.stoplight.io/).
 
-Please make sure to update tests as appropriate.
+## Contributing
+
+Contributions to this project are welcome. If you'd like to contribute, please follow these guidelines:
+
+1. Open an issue to discuss your proposed changes before submitting a pull request.
+2. Ensure that your code adheres to the project's coding standards.
+3. Write tests for your code and make sure existing tests pass.
+4. Document your changes thoroughly, including updating this README if necessary.
+
+Thank you for your interest in improving this project!
