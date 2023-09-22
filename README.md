@@ -34,9 +34,9 @@ Here's an example of how to use it:
 from opensubtitlescom import OpenSubtitles
 
 # Initialize the OpenSubtitles client
-subtitles = OpenSubtitles(MY_API_KEY)
+subtitles = OpenSubtitles(MY_API_KEY, "MyApp v1.0.0")
 
-# Log in (optional but may be required for certain operations)
+# Log in (retrieve auth token)
 subtitles.login(MY_USERNAME, MY_PASSWORD)
 
 # Search for subtitles
@@ -45,10 +45,17 @@ response = subtitles.search(query="breaking bad", season_number=1, episode_numbe
 # Convert the response to a Python dictionary
 response_dict = response.to_dict()
 print(response_dict)
-
-# Save the first result locally
-subtitles.download_and_save(response.data[0])
 ```
+
+Here's another simple example:
+```python
+# Get latest uploaded subtitles
+latest_uploads = subtitles.discover_latest()
+
+# Convert the response to a Python dictionary
+latest_uploads_dict = latest_uploads.to_dict()
+```
+
 
 For more information on available methods and options,
 refer to the [OpenSubtitles API documentation](https://opensubtitles.stoplight.io/).

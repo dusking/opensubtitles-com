@@ -33,6 +33,7 @@ setup_kwargs = dict(
     url="https://github.com/dusking/opensubtitles-com.git",
     classifiers=[
         "Development Status :: 3 - Alpha",
+        "Intended Audience :: Developers",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
     ],
