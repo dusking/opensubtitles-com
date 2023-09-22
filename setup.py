@@ -14,10 +14,11 @@ def parse_requirements(filename) -> List[str]:
     return [line for line in lineiter if line and not line.startswith("#")]
 
 
-install_reqs = parse_requirements("requirements.txt")
-requirements = [str(ir) for ir in install_reqs]
+# install_reqs = parse_requirements("requirements.txt")
+# requirements = [str(ir) for ir in install_reqs]
+requirements = []
 
-version = "0.0.3"
+version = "0.0.4"
 
 setup_kwargs = dict(
     name="opensubtitlescom",
