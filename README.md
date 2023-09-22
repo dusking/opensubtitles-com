@@ -58,7 +58,7 @@ latest_uploads_dict = latest_uploads.to_dict()
 
 
 For more information on available methods and options,
-refer to the [OpenSubtitles API documentation](https://opensubtitles.stoplight.io/).
+refer to the [OpenSubtitles API documentation](https://api.opensubtitles.com/).
 
 ## Contributing
 
