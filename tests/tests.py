@@ -29,7 +29,7 @@ class TestOpenSubtitlesAPI(unittest.TestCase):
         mock_download_client.get.return_value = bytes()
 
         self.mock_download_client = mock_download_client
-        self.api = OpenSubtitles("api-key")
+        self.api = OpenSubtitles("api-key", "MyAp v1.0.0")
         self.api.download_client = self.mock_download_client
 
     @patch("opensubtitlescom.OpenSubtitles.send_api")

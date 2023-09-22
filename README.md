@@ -60,6 +60,16 @@ latest_uploads_dict = latest_uploads.to_dict()
 For more information on available methods and options,
 refer to the [OpenSubtitles API documentation](https://api.opensubtitles.com/).
 
+## Running Tests
+
+To execute the unit tests, use the following command:
+
+```
+$ python -m unittest
+```
+
+Make sure you have the necessary dependencies installed and a valid Python environment set up before running the tests.
+
 ## Contributing
 
 Contributions to this project are welcome. If you'd like to contribute, please follow these guidelines:
