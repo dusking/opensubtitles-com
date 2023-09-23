@@ -11,5 +11,6 @@ For full details, please see the LICENSE file located in the root
 directory of this project.
 """
 
+from .file_utils import FileUtils  # noqa: F401
 from .opensubtitles import OpenSubtitles  # noqa: F401
 from .exceptions import OpenSubtitlesException  # noqa: F401

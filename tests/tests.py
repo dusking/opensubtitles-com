@@ -13,7 +13,9 @@ directory of this project.
 This is the test module for the opensubtitles wrapper.
 """
 
+import os
 import unittest
+from pathlib import Path
 from unittest.mock import patch, Mock
 
 from opensubtitlescom import OpenSubtitles
@@ -31,6 +33,21 @@ class TestOpenSubtitlesAPI(unittest.TestCase):
         self.mock_download_client = mock_download_client
         self.api = OpenSubtitles("api-key", "MyAp v1.0.0")
         self.api.download_client = self.mock_download_client
+
+        self.api.downloads_dir = "test_downloads"
+        os.makedirs(self.api.downloads_dir, exist_ok=True)
+
+    def tearDown(self):
+        """
+        Clean up the test downloads directory by removing all files and the directory itself.
+
+        This method is automatically called after each test case to ensure that the test environment is clean.
+        """
+        # Clean up the test downloads directory
+        for file in Path(self.api.downloads_dir).iterdir():
+            if file.is_file():
+                file.unlink()
+        os.rmdir(self.api.downloads_dir)
 
     @patch("opensubtitlescom.OpenSubtitles.send_api")
     def test_successful_login(self, mock_login_req):
@@ -103,3 +120,32 @@ class TestOpenSubtitlesAPI(unittest.TestCase):
         assert search_result.per_page == 20
         assert search_result.page == 1
         assert len(search_result.data) == 2  # Assuming 2 items in data
+
+    def test_save_content_locally_with_filename(self):
+        """
+        Test saving content with a specified filename.
+
+        This test ensures that the function correctly saves content to a file with a specified filename.
+        """
+        content = b"This is some test content."
+        filename = "test_file.srt"
+
+        result = self.api.save_content_locally(content, filename)
+
+        assert Path(result).exists()
+        assert Path(result).name == filename
+        assert content == Path(result).read_bytes()
+
+    def test_save_content_locally_without_filename(self):
+        """
+        Test saving content without a specified filename.
+
+        This test ensures that the function correctly saves content to a file with a generated filename (UUID-based).
+        """
+        content = b"This is some test content."
+
+        result = self.api.save_content_locally(content)
+
+        assert Path(result).exists()
+        assert result.endswith(".srt")
+        assert content == Path(result).read_bytes()

@@ -23,7 +23,7 @@ from pathlib import Path
 from typing import Literal, Union, Optional
 
 from .srt import parse
-from .files import write
+from .file_utils import FileUtils
 from .exceptions import OpenSubtitlesException
 from .responses import (
     SearchResponse,
@@ -53,6 +53,7 @@ class OpenSubtitles:
         self.api_key = api_key
         self.user_agent = user_agent
         self.downloads_dir = "."
+        self.user_downloads_remaining = 0
 
     def send_api(
         self, cmd: str, body: Optional[dict] = None, method: Union[str, Literal["GET", "POST", "DELETE"]] = None
@@ -241,8 +242,7 @@ class OpenSubtitles:
         """
         subtitle_id = file_id.file_id if isinstance(file_id, Subtitle) else file_id
         if not subtitle_id:
-            logger.warning("Missing subtitle file id.")
-            return
+            raise OpenSubtitlesException("Missing subtitle file id.")
 
         download_body = {"file_id": subtitle_id}
 
@@ -259,10 +259,9 @@ class OpenSubtitles:
         add_param("force_download", force_download)
 
         if self.user_downloads_remaining <= 0:
-            logger.warning(
+            raise OpenSubtitlesException(
                 "Download limit reached. " "Please upgrade your account or wait for your quota to reset (~24hrs)"
             )
-            return
 
         search_response_data = DownloadResponse(self.send_api("download", download_body))
         self.user_downloads_remaining = search_response_data.remaining
@@ -277,10 +276,10 @@ class OpenSubtitles:
         :param filename:  target local filename.
         :return: the path of the local file containing the content.
         """
-        local_filename = f"{filename or uuid.uuid4()}.srt"
+        local_filename = f"{filename.removesuffix('.srt') if filename else uuid.uuid4()}.srt"
         srt_path = Path(self.downloads_dir).joinpath(local_filename)
-        write(srt_path, content)
-        return srt_path
+        FileUtils(srt_path).write(content)
+        return srt_path.as_posix()
 
     def download_and_save(self, file_id: Union[str, Subtitle], **kwargs) -> str:
         """Call the download function to get rge subtitle content, then save the content to a local file.
@@ -291,11 +290,10 @@ class OpenSubtitles:
         subtitle_id = file_id.file_id if isinstance(file_id, Subtitle) else file_id
         content = self.download(subtitle_id, **kwargs)
         if not content:
-            logger.warning(f"Failed to get content for: {file_id}")
-            return
+            raise OpenSubtitlesException(f"Failed to get content for: {file_id}")
         return self.save_content_locally(content, subtitle_id)
 
-    def parse_srt(self, content):
+    def parse_srt(self, content) -> list:
         """
         Parse subtitles in SRT format.
 
@@ -333,5 +331,5 @@ class OpenSubtitles:
             bytes: The content as bytes, encoded in UTF-8.
         """
         if isinstance(content, str):
-            content = content.decode("utf-8")
+            content = content.encode("utf-8")
         return content
