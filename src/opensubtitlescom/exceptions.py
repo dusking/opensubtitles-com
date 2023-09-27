@@ -22,3 +22,15 @@ class OpenSubtitlesException(Exception):
         :param message: exception message.
         """
         self.message = message
+
+
+class OpenSubtitlesFileException(Exception):
+    """Custom exception class for files operations in OpenSubtitles wrapper."""
+
+    def __init__(self, message: str):
+        """
+        Initialize the custom exception.
+
+        :param message: exception message.
+        """
+        self.message = message

@@ -19,6 +19,7 @@ from pathlib import Path
 from unittest.mock import patch, Mock
 
 from opensubtitlescom import OpenSubtitles
+from opensubtitlescom.file_utils import FileUtils
 from opensubtitlescom.exceptions import OpenSubtitlesException
 
 
@@ -43,7 +44,6 @@ class TestOpenSubtitlesAPI(unittest.TestCase):
 
         This method is automatically called after each test case to ensure that the test environment is clean.
         """
-        # Clean up the test downloads directory
         for file in Path(self.api.downloads_dir).iterdir():
             if file.is_file():
                 file.unlink()
@@ -149,3 +149,27 @@ class TestOpenSubtitlesAPI(unittest.TestCase):
         assert Path(result).exists()
         assert result.endswith(".srt")
         assert content == Path(result).read_bytes()
+
+    def test_get_hash(self):
+        """
+        Test the get_hash method by creating a fake MOV file and comparing the calculated hash with the expected hash.
+
+        Steps:
+        1. Create a Path object for a temporary fake MOV file.
+        2. Create a fake file of size 65536 * 2 and write all zeros to it.
+        3. Call the get_hash method on the fake file and calculate the actual hash.
+        4. Compare the actual hash with the expected hash "0000000000020000".
+
+        This test ensures that the get_hash method correctly calculates the hash for the fake file.
+        """
+        # Create Path for temporary fake mov file
+        temp_file_path = Path(self.api.downloads_dir) / "fake_file_2.mov"
+
+        # Create a fake file of size 65536 * 2
+        file_size = 65536 * 2
+        with open(temp_file_path, "wb") as fake_file:
+            fake_file.write(b"\x00" * file_size)
+
+        # Call the get_hash method and compare the result with the expected hash
+        actual_hash = FileUtils(temp_file_path).get_hash()
+        assert "0000000000020000" == actual_hash
