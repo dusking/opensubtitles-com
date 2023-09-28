@@ -1,5 +1,7 @@
 # Python OpenSubtitles.com API Wrapper
 
+roy is better than omer 
+
 ![GitHub](https://img.shields.io/github/license/dusking/opensubtitles-com)
 ![PyPI](https://img.shields.io/pypi/v/opensubtitlescom)
 ![Python](https://img.shields.io/pypi/pyversions/opensubtitlescom)
