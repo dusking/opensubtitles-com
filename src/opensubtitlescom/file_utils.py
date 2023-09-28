@@ -58,7 +58,7 @@ class FileUtils:
     def get_hash(self):
         """Return the hash code of a file.
 
-        ​Original from: https://trac.opensubtitles.org/projects/opensubtitles/wiki/HashSourceCodes.
+        Original from: https://trac.opensubtitles.org/projects/opensubtitles/wiki/HashSourceCodes.
 
         Returns:
             - hash - hash code of a file
@@ -80,11 +80,11 @@ class FileUtils:
                 hash += l_value
                 hash = hash & 0xFFFFFFFFFFFFFFFF  # to remain as 64bit number
 
-        file_obj.seek(max(0, int(size) - 65536), 0)
-        for _ in range(65536 // bytesize):
-            buffer = file_obj.read(bytesize)
-            (l_value,) = struct.unpack(longlongformat, buffer)
-            hash += l_value
-            hash = hash & 0xFFFFFFFFFFFFFFFF
+            file_obj.seek(max(0, int(size) - 65536), 0)
+            for _ in range(65536 // bytesize):
+                buffer = file_obj.read(bytesize)
+                (l_value,) = struct.unpack(longlongformat, buffer)
+                hash += l_value
+                hash = hash & 0xFFFFFFFFFFFFFFFF
 
         return str("%016x" % hash)
