@@ -11,7 +11,6 @@ For full details, please see the LICENSE file located in the root
 directory of this project.
 """
 import struct
-import hashlib
 
 from pathlib import Path
 
@@ -57,10 +56,12 @@ class FileUtils:
         return self.path.exists()
 
     def get_hash(self):
-        """
-        Return the hash code of a file.
-​
-        Original from: https://trac.opensubtitles.org/projects/opensubtitles/wiki/HashSourceCodes.
+        """Return the hash code of a file.
+
+        ​Original from: https://trac.opensubtitles.org/projects/opensubtitles/wiki/HashSourceCodes.
+
+        Returns:
+            - hash - hash code of a file
         """
         if not self.exists():
             raise OpenSubtitlesFileException(f"File not exists: {self.path}")
