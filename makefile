@@ -1,5 +1,6 @@
 pre-commit:
 	pre-commit run --all-files
+	make test
 
 test:
 	pytest tests
