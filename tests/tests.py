@@ -173,3 +173,26 @@ class TestOpenSubtitlesAPI(unittest.TestCase):
         # Call the get_hash method and compare the result with the expected hash
         actual_hash = FileUtils(temp_file_path).get_hash()
         assert "0000000000020000" == actual_hash
+
+    def test_get_md5(self):
+        """
+        Test the get_md5 method by creating a fake file and comparing the calculated MD5 hash with the expected hash.
+    
+        Steps:
+        1. Create a Path object for a temporary fake MOV file.
+        2. Create a fake file of size 65536 * 2 and write all zeros to it.
+        3. Call the get_md5 method on the fake file and calculate the actual MD5 hash.
+        4. Compare the actual MD5 hash with the expected MD5 hash "0dfbe8aa4c20b52e1b8bf3cb6cbdf193".
+    
+        This test ensures that the get_md5 method correctly calculates the MD5 hash for the fake file.
+        """
+        # Create Path for temporary fake mov file
+        temp_file_path = Path(self.api.downloads_dir) / "fake_file_1.mov"
+
+        # Create a fake file of size 65536 * 2
+        file_size = 65536 * 2
+        with open(temp_file_path, "wb") as fake_file:
+            fake_file.write(b"\x00" * file_size)
+        
+        actual_md5 = FileUtils(temp_file_path).get_md5()
+        assert "0dfbe8aa4c20b52e1b8bf3cb6cbdf193" == actual_md5
