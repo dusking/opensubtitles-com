@@ -11,6 +11,7 @@ For full details, please see the LICENSE file located in the root
 directory of this project.
 """
 import struct
+import hashlib
 
 from pathlib import Path
 
@@ -88,3 +89,7 @@ class FileUtils:
                 hash = hash & 0xFFFFFFFFFFFFFFFF
 
         return str("%016x" % hash)
+
+    def get_md5(self):
+        """Return the md5 of a file."""
+        return hashlib.md5(self.path.read_bytes()).hexdigest()
