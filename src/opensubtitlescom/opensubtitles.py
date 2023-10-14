@@ -227,30 +227,30 @@ class OpenSubtitles:
 
     def download_and_parse(self, *args, **kwargs) -> list:
         """
-       Download a subtitle file and parse it into a list of subtitle entries in SRT format.
+        Download a subtitle file and parse it into a list of subtitle entries in SRT format.
 
-       Args:
-           *args: Variable-length positional arguments.
-           **kwargs: Variable-length keyword arguments.
+        Args:
+            *args: Variable-length positional arguments.
+            **kwargs: Variable-length keyword arguments.
 
-       Returns:
-           list: A list of parsed subtitle entries in SRT format.
+        Returns:
+            list: A list of parsed subtitle entries in SRT format.
 
-       This function first downloads a subtitle file using the provided arguments and then parses
-       the content of the downloaded file into a list of subtitle entries. The downloaded subtitle
-       file is expected to be in SRT format.
+        This function first downloads a subtitle file using the provided arguments and then parses
+        the content of the downloaded file into a list of subtitle entries. The downloaded subtitle
+        file is expected to be in SRT format.
 
-       Note: You can specify various optional parameters when calling this function to control
-       the download and parsing process, such as sub_format, file_name, in_fps, out_fps, timeshift,
-       and force_download.
+        Note: You can specify various optional parameters when calling this function to control
+        the download and parsing process, such as sub_format, file_name, in_fps, out_fps, timeshift,
+        and force_download.
 
-       Example usage:
-       ```
-       subtitles = open_subtitles.download_and_parse(file_id, sub_format="srt")
-       for subtitle_entry in subtitles:
-           print(subtitle_entry.content)
-       ```
-       """
+        Example usage:
+        ```
+        subtitles = open_subtitles.download_and_parse(file_id, sub_format="srt")
+        for subtitle_entry in subtitles:
+            print(subtitle_entry.content)
+        ```
+        """
         content = self.download(*args, **kwargs)
         return self.parse_srt(self.bytes_to_str(content))
 
