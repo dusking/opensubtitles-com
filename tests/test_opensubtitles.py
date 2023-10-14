@@ -21,7 +21,7 @@ from unittest.mock import patch, Mock
 from opensubtitlescom import OpenSubtitles
 from opensubtitlescom.file_utils import FileUtils
 from opensubtitlescom.exceptions import OpenSubtitlesException
-
+from opensubtitlescom.srt import parse
 
 class TestOpenSubtitlesAPI(unittest.TestCase):
     """Test cases for the OpenSubtitlesAPI class."""
@@ -196,3 +196,23 @@ class TestOpenSubtitlesAPI(unittest.TestCase):
 
         actual_md5 = FileUtils(temp_file_path).get_md5()
         assert "0dfbe8aa4c20b52e1b8bf3cb6cbdf193" == actual_md5
+
+    def test_download_and_parse(self):
+        """Test download and parse function."""
+        # Create a mock download response (replace with your sample SRT content)
+        mock_srt_content = b"1\n00:00:10,500 --> 00:00:14,000\nSubtitle Line 1\n\n2\n00:00:15,000 --> 00:00:18,500\nSubtitle Line 2\n"
+
+        # Create a mock OpenSubtitles instance
+        self.api.download = Mock(return_value=mock_srt_content)
+
+        # Call the download_and_parse function with any arguments you want to test
+        subtitles = self.api.download_and_parse(file_id="sample_file_id", sub_format="srt")
+
+        # Assert that the mock download function was called with the expected arguments
+        self.api.download.assert_called_with(file_id="sample_file_id", sub_format="srt")
+
+        # Define the expected parsed subtitles (adjust according to your mock SRT content)
+        expected_subtitles = list(parse(self.api.bytes_to_str(mock_srt_content)))
+
+        # Assert that the parsed subtitles match the expected result
+        self.assertEqual(subtitles, expected_subtitles)

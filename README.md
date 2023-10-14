@@ -45,6 +45,9 @@ response = subtitles.search(query="breaking bad", season_number=1, episode_numbe
 # Convert the response to a Python dictionary
 response_dict = response.to_dict()
 print(response_dict)
+
+# Get first response subtitles
+srt = subtitles.download_and_parse(response.data[0])
 ```
 
 Here's another simple example:
