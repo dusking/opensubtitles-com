@@ -67,10 +67,12 @@ class OpenSubtitles:
         }
         if self.token:
             headers["authorization"] = self.token
+        if not method:
+            method = "POST" if body else "GET"
         try:
             if method == "DELETE":
                 response = requests.delete(f"{self.base_url}/{cmd}", headers=headers)
-            elif body:
+            elif method == "POST":
                 response = requests.post(f"{self.base_url}/{cmd}", data=json.dumps(body), headers=headers)
             else:
                 response = requests.get(f"{self.base_url}/{cmd}", headers=headers)
@@ -78,7 +80,7 @@ class OpenSubtitles:
             json_response = response.json()
             return json_response
         except requests.exceptions.HTTPError as http_err:
-            raise OpenSubtitlesException(f"Failed with HTTP Error: {http_err}")
+            raise OpenSubtitlesException(f"Failed {method} with HTTP Error: {http_err}")
         except requests.exceptions.RequestException as req_err:
             raise OpenSubtitlesException(f"Failed to send request: {req_err}")
         except ValueError as ex:
@@ -191,6 +193,12 @@ class OpenSubtitles:
         def add_param(name, value):
             if value is not None:
                 query_params.append(f"{name}={value}")
+
+        if query:
+            assert len(query) >= 4, "query minimum length is 4"
+            if len(query) == 4:
+                # if query length is 4 - pad it with "+" (since API minimum query length is 5)
+                query += "+"
 
         # Add parameters to the query_params list
         add_param("ai_translated", ai_translated)
