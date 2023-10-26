@@ -76,11 +76,13 @@ class OpenSubtitles:
                 response = requests.post(f"{self.base_url}/{cmd}", data=json.dumps(body), headers=headers)
             else:
                 response = requests.get(f"{self.base_url}/{cmd}", headers=headers)
+            if response.status_code >= 400:
+                logger.error(f"API `{cmd}` failed with {response.status_code}: {response.content.decode('utf-8')}")
             response.raise_for_status()
             json_response = response.json()
             return json_response
         except requests.exceptions.HTTPError as http_err:
-            raise OpenSubtitlesException(f"Failed {method} with HTTP Error: {http_err}")
+            raise OpenSubtitlesException(f"Failed with HTTP {http_err}: {http_err}")
         except requests.exceptions.RequestException as req_err:
             raise OpenSubtitlesException(f"Failed to send request: {req_err}")
         except ValueError as ex:
@@ -313,7 +315,7 @@ class OpenSubtitles:
         :param filename:  target local filename.
         :return: the path of the local file containing the content.
         """
-        local_filename = f"{filename.removesuffix('.srt') if filename else uuid.uuid4()}.srt"
+        local_filename = f"{str(filename).removesuffix('.srt') if filename else uuid.uuid4()}.srt"
         srt_path = Path(self.downloads_dir).joinpath(local_filename)
         FileUtils(srt_path).write(content)
         return srt_path.as_posix()
@@ -324,11 +326,13 @@ class OpenSubtitles:
         :param file_id: file_id or subtitles object.
         :return: local file path.
         """
+        filename = kwargs.pop("filename", None)
         subtitle_id = file_id.file_id if isinstance(file_id, Subtitle) else file_id
         content = self.download(subtitle_id, **kwargs)
         if not content:
             raise OpenSubtitlesException(f"Failed to get content for: {file_id}")
-        return self.save_content_locally(content, subtitle_id)
+        filename = filename or subtitle_id
+        return self.save_content_locally(content, filename)
 
     def parse_srt(self, content) -> list:
         """
