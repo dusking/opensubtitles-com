@@ -248,6 +248,16 @@ class Subtitle(object):
             eol=eol,
         )
 
+    def words(self, lower=True):
+        """Extract words from a subtitle line.
+
+        Returns:
+            list: A list of words extracted from the subtitle line.
+        """
+        line = re.sub(r'<.*?>', '', self.content)  # Remove HTML tags (may be used for text formatting)
+        clean_text = re.sub(r'[^a-zA-Z\s\']', ' ', line)  # Removes any non-alphabet characters
+        return [w.strip().lower() if lower else w.strip() for w in clean_text.split()]  # Extract word
+
 
 def make_legal_content(content):
     r"""
