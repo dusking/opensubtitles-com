@@ -196,12 +196,6 @@ class OpenSubtitles:
             if value is not None:
                 query_params.append(f"{name}={value}")
 
-        if query:
-            assert len(query) >= 4, "query minimum length is 4"
-            if len(query) == 4:
-                # if query length is 4 - pad it with "+" (since API minimum query length is 5)
-                query += "+"
-
         # Add parameters to the query_params list
         add_param("ai_translated", ai_translated)
         add_param("episode_number", episode_number)
