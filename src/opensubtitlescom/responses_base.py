@@ -14,8 +14,10 @@ This module define base class of opensubtitles responses.
 """
 
 import ast
+import json
 import functools
 import logging
+from typing import Any
 from datetime import datetime, date
 
 logger = logging.getLogger(__name__)
@@ -38,6 +40,29 @@ def rsetattr(obj, attr, val):
     """Support setattr on nested subobjects / chained properties."""
     pre, _, post = attr.rpartition(".")
     return setattr(rgetattr(obj, pre) if pre else obj, post, val)
+
+
+class ResponseJSONEncoder(json.JSONEncoder):
+    """JSON encoder class for handling custom serialization of Response objects.
+
+    Handle the SearchResponse that consists of Subtitle list.
+    """
+
+    def default(self, o: object) -> Any:
+        """Override the default method of the JSONEncoder class.
+
+        Serializes objects with a 'to_dict' method using 'to_dict'.
+        Falls back to the super class's default method for other objects.
+
+        Parameters:
+            o (object): The object to be serialized.
+
+        Returns:
+            Any: The serialized representation of the object.
+        """
+        if hasattr(o, "to_dict"):
+            return o.to_dict()
+        return super().default(o)
 
 
 class BaseResponse:
@@ -150,7 +175,7 @@ class BaseResponse:
         except Exception as ex:
             raise Exception(f"Unable to set styling for value: {value}: {ex}")
 
-    def to_dict(self, ignore_none=False, dotted_key_to_dict=False):
+    def to_dict(self, ignore_none=False, dotted_key_to_dict=False) -> dict:
         """Convert the BaseResponse object to a dictionary.
 
         Args:
@@ -186,3 +211,11 @@ class BaseResponse:
         except Exception as ex:
             raise Exception(f"Unable to get fields: {returned_fields}, ex: {ex}")
         return fields_data
+
+    def to_json(self) -> str:
+        """Convert the object to a JSON-formatted string.
+
+        Returns:
+           str: The JSON-formatted string representation of the object.
+        """
+        return json.dumps(self.to_dict(), cls=ResponseJSONEncoder)

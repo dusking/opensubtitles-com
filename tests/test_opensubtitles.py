@@ -14,6 +14,7 @@ This is the test module for the opensubtitles wrapper.
 """
 
 import os
+import json
 import unittest
 from pathlib import Path
 from unittest.mock import patch, Mock
@@ -121,6 +122,29 @@ class TestOpenSubtitlesAPI(unittest.TestCase):
         assert search_result.per_page == 20
         assert search_result.page == 1
         assert len(search_result.data) == 2  # Assuming 2 items in data
+
+    @patch("opensubtitlescom.OpenSubtitles.send_api")
+    def test_search_response_json(self, mock_login_req):
+        """Test parsing of search response."""
+        # Mock the search response data
+        search_response_data = {
+            "total_pages": 5,
+            "total_count": 100,
+            "per_page": 20,
+            "page": 1,
+            "data": [
+                {"id": "7061050", "type": "subtitle", "attributes": {"subtitle_id": "7061050", "language": "en"}},
+                {"id": "7061050", "type": "subtitle", "attributes": {"subtitle_id": "7061050", "language": "en"}},
+            ],
+        }
+        mock_login_req.return_value = search_response_data
+
+        # Call the search method with any parameters you want to test
+        search_result = self.api.search(query="example_query")
+
+        # Verify that there is no Json exception
+        data = json.loads(search_result.to_json())
+        assert data["total_pages"] == 5
 
     def test_save_content_locally_with_filename(self):
         """

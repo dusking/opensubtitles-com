@@ -46,6 +46,10 @@ response = subtitles.search(query="breaking bad", season_number=1, episode_numbe
 response_dict = response.to_dict()
 print(response_dict)
 
+# Convert the response to a Json format
+response_json = response.to_json()
+print(response_json)
+
 # Get first response subtitles
 srt = subtitles.download_and_parse(response.data[0])
 ```
