@@ -10,7 +10,7 @@ clean:
 
 build:
 	make clean
-	python setup.py sdist
+	python -m build
 
 publish:
 	twine upload dist/*
