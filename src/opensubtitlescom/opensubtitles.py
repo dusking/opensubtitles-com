@@ -305,7 +305,7 @@ class OpenSubtitles:
         """
         Save content locally.
 
-        :param content: content of dubtitle file.
+        :param content: content of subtitle file.
         :param filename:  target local filename.
         :return: the path of the local file containing the content.
         """
@@ -315,7 +315,7 @@ class OpenSubtitles:
         return srt_path.as_posix()
 
     def download_and_save(self, file_id: Union[str, Subtitle], **kwargs) -> str:
-        """Call the download function to get rge subtitle content, then save the content to a local file.
+        """Call the download function to get the subtitle content, then save the content to a local file.
 
         :param file_id: file_id or subtitles object.
         :return: local file path.
