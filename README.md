@@ -67,6 +67,50 @@ latest_uploads_dict = latest_uploads.to_dict()
 For more information on available methods and options,
 refer to the [OpenSubtitles API documentation](https://api.opensubtitles.com/).
 
+## Command Line Interface (CLI)
+
+### Installation
+
+Ensure you've followed the library installation steps outlined at the top of this README. 
+Once the library is installed, you can access the `ost` command-line interface.
+
+### Usage
+
+To explore the available options, run:
+
+```bash
+ost --help
+```
+
+Before utilizing the library, set up the credentials configuration file using:
+
+```bash
+ost set-cred
+```
+
+Searching for existing subtitles is straightforward:
+
+```bash
+ost search --query fightclub
+```
+
+Downloading existing subtitles can be done in two ways:
+
+If you have the file ID (obtained from the search response):
+
+```bash
+ost download --file-id 1234567
+```
+
+If you have the movie file and prefer to search by the movie hash:
+
+```bash
+ost download --file-path movie
+```
+
+Feel free to explore additional functionalities and options using the provided --help command 
+or refer to the documentation for more details.
+
 ## Running Tests
 
 To execute the unit tests, use the following command:

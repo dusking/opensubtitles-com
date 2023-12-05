@@ -23,6 +23,7 @@ from pathlib import Path
 from typing import Literal, Union, Optional
 
 from .srt import parse
+from .config import Config
 from .file_utils import FileUtils
 from .exceptions import OpenSubtitlesException
 from .responses import (
@@ -41,17 +42,18 @@ logger = logging.getLogger(__name__)
 class OpenSubtitles:
     """OpenSubtitles REST API Wrapper."""
 
-    def __init__(self, api_key: str, user_agent: str):
+    def __init__(self, api_key: Optional[str] = None, user_agent: Optional[str] = None):
         """Initialize the OpenSubtitles object.
 
         :param api_key:
         :param user_agent: a string representing the user agent, like: "MyApp v0.0.1"
         """
+        self._config = Config()
         self.download_client = DownloadClient()
         self.base_url = "https://api.opensubtitles.com/api/v1"
         self.token = None
-        self.api_key = api_key
-        self.user_agent = user_agent
+        self.api_key = api_key or self._config.api_key
+        self.user_agent = user_agent or self._config.app_name
         self.downloads_dir = "."
         self.user_downloads_remaining = 0
 
@@ -88,13 +90,13 @@ class OpenSubtitles:
         except ValueError as ex:
             raise OpenSubtitlesException(f"Failed to parse login JSON response: {ex}")
 
-    def login(self, username: str, password: str):
+    def login(self, username: Optional[str] = None, password: Optional[str] = None):
         """
         Login request - needed to obtain session token.
 
         Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/73acf79accc0a-login
         """
-        body = {"username": username, "password": password}
+        body = {"username": username or self._config.username, "password": password or self._config.username}
         login_response = self.send_api("login", body)
         self.token = login_response["token"]
         self.user_downloads_remaining = login_response["user"]["allowed_downloads"]
