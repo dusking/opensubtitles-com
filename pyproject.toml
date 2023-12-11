@@ -47,4 +47,4 @@ line-length = 120
 ignore = "E203"
 
 [project.scripts]
-osccli = "opensubtitlescom.cli:main"
+ost = "ost_cli.main:main"
