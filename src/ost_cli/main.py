@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 
+from pathlib import Path
 import sys
 import logging
 import argparse
 from typing import List
+from .config import Config
 
 
 logger = logging.getLogger(__name__)
@@ -18,6 +20,7 @@ def parse_args(argv: List[str]):
     """Parse command-line arguments for the OpenSubtitles CLI."""
     parser = argparse.ArgumentParser()
     parser.add_argument("-v", "--verbose", action="count", default=0, help="Increase verbosity level")
+    parser.add_argument("--config", type=Path, default="~/.config/opensubtitlescom/cli.json")
 
     subparsers = parser.add_subparsers(dest="command")
 
