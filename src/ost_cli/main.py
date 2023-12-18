@@ -16,11 +16,26 @@ import argparse
 from typing import List
 from pathlib import Path
 
-from opensubtitlescom import Config
+from opensubtitlescom import Config, OpenSubtitles
 
 from .table import dict_to_pt
 
 logger = logging.getLogger(__name__)
+
+APP_NAME = "CLI Test"
+APP_VER = "0.0.0"
+API_KEY = "F0f1dadQ89xKIP5TIsu3Y8KT7TiDBIfG"
+API_APP = f"{APP_NAME} v{APP_VER}"
+
+
+def _get_api(cfg: Config):
+    """
+    Create an OpenSubtitles API object and login with the credentials in the config file
+    """
+    subtitles = OpenSubtitles(API_APP, API_KEY)
+    if cfg.username and cfg.password:
+        subtitles.login(cfg.username, cfg.password)
+    return subtitles
 
 
 def hello(args: argparse.Namespace):
