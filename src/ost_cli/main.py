@@ -22,9 +22,9 @@ from .table import dict_to_pt
 
 logger = logging.getLogger(__name__)
 
-APP_NAME = "CLI Test"
-APP_VER = "0.0.0"
-API_KEY = "F0f1dadQ89xKIP5TIsu3Y8KT7TiDBIfG"
+APP_NAME = "opensubtitlescom_py"
+APP_VER = "0.1.3"
+API_KEY = "CFpwJe7burdfYLEoTzSNG88Z7Lc2ex3b"
 API_APP = f"{APP_NAME} v{APP_VER}"
 
 
