@@ -34,7 +34,6 @@ class Config:
             If not, the class creates the necessary directory structure for the configuration file.
         """
         self._path: Path = (Path(path or DEFAULT_CONFIG_PATH)).expanduser()
-        self.api_key: Optional[str] = None
         self.username: Optional[str] = None
         self.password: Optional[str] = None
         self.language: str = "en"
