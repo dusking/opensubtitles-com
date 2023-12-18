@@ -23,6 +23,7 @@ classifiers=[
 ]
 dependencies = [
     "requests",
+    "prettytable",
 ]
 
 [project.optional-dependencies]
