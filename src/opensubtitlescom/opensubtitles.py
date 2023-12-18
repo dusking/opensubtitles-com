@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 class OpenSubtitles:
     """OpenSubtitles REST API Wrapper."""
 
-    def __init__(self, user_agent: str, api_key: Optional[str] = None):
+    def __init__(self, user_agent: str, api_key: str):
         """Initialize the OpenSubtitles object.
 
         :param api_key:
@@ -52,7 +52,7 @@ class OpenSubtitles:
         self.download_client = DownloadClient()
         self.base_url = "https://api.opensubtitles.com/api/v1"
         self.token = None
-        self.api_key = api_key or self._config.api_key
+        self.api_key = api_key
         self.user_agent = user_agent
         self.downloads_dir = "."
         self.user_downloads_remaining = 0

@@ -65,7 +65,6 @@ def show_credentials(args: argparse.Namespace):
     values = {
         "username": cfg.username,
         "password": hide_secret(cfg.password, 2),
-        "api_key": hide_secret(cfg.api_key, 2),
         "language": cfg.language,
     }
     print(dict_to_pt(values, align="l"))
