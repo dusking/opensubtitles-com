@@ -7,14 +7,14 @@ from prettytable import PrettyTable
 def dicts_to_pt(data, sort=None, align=None):
     """Convert a list of dictionaries to a PrettyTable.
 
-   Parameters:
-   - data (list): A list of dictionaries to be converted (must have same keys).
-   - sort (str, optional): The key to sort the data. Defaults to None.
-   - align (str, optional): The alignment of columns. Defaults to None.
+    Parameters:
+    - data (list): A list of dictionaries to be converted (must have same keys).
+    - sort (str, optional): The key to sort the data. Defaults to None.
+    - align (str, optional): The alignment of columns. Defaults to None.
 
-   Returns:
-   PrettyTable: A PrettyTable containing the converted data.
-   """
+    Returns:
+    PrettyTable: A PrettyTable containing the converted data.
+    """
     data = sorted(data, key=itemgetter(sort), reverse=False) if sort else data
     all_keys = sum([list(x.keys()) for x in data], [])  # get a list of all keys
     columns = list(OrderedDict.fromkeys(all_keys))  # remove duplicates, uses OrderedDict to keep the order of columns
