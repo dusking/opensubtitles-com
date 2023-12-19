@@ -29,9 +29,7 @@ API_APP = f"{APP_NAME} v{APP_VER}"
 
 
 def _get_api(cfg: Config):
-    """
-    Create an OpenSubtitles API object and login with the credentials in the config file
-    """
+    """Create an OpenSubtitles API object and login with the credentials in the config file."""
     subtitles = OpenSubtitles(API_APP, API_KEY)
     if cfg.username and cfg.password:
         subtitles.login(cfg.username, cfg.password)

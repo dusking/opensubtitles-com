@@ -1,3 +1,13 @@
+"""
+This file is part of Opensubtitles API wrapper.
+
+Opensubtitles API is free software: you can redistribute it and/or modify
+it under the terms of the MIT License as published by the Massachusetts
+Institute of Technology.
+
+For full details, please see the LICENSE file located in the root
+directory of this project.
+"""
 from operator import itemgetter
 from collections import OrderedDict
 
@@ -22,9 +32,18 @@ def dicts_to_pt(data, sort=None, align=None):
     return generate_table(columns, data=data, align=align)
 
 
-def dict_to_pt(data, sort=None, align=None):
+def dict_to_pt(data, align=None):
+    """Convert a dict to a PrettyTable.
+
+    Parameters:
+    - data (list): The dictionary be convert.
+    - align (str, optional): The alignment of columns. Defaults to None.
+
+    Returns:
+    PrettyTable: A PrettyTable containing the converted data.
+    """
     list_of_dicts = [{"key": k, "value": v} for k, v in data.items()]
-    return dicts_to_pt(list_of_dicts, sort, align)
+    return dicts_to_pt(list_of_dicts, None, align)
 
 
 def add_numbers_column(columns, items):
