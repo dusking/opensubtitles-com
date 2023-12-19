@@ -58,7 +58,7 @@ class OpenSubtitles:
         self.user_downloads_remaining = 0
 
     def send_api(
-        self, cmd: str, body: Optional[dict] = None, method: Union[str, Literal["GET", "POST", "DELETE"]] = None
+        self, cmd: str, body: Optional[dict] = None, method: Optional[Union[str, Literal["GET", "POST", "DELETE"]]] = None
     ) -> dict:
         """Send the API request."""
         headers = {
@@ -161,7 +161,7 @@ class OpenSubtitles:
         return DiscoverLatestResponse(**response)
 
     def discover_most_downloaded(
-        self, languages: Optional[str] = None, type: Union[str, Literal["movie", "tvshow"]] = None
+        self, languages: Optional[str] = None, type: Optional[Union[str, Literal["movie", "tvshow"]]] = None
     ):
         """
         Get popular subtitles, according to last 30 days downloads on opensubtitles.com.
@@ -174,18 +174,18 @@ class OpenSubtitles:
     def search(
         self,
         *,
-        ai_translated: Union[str, Literal["exclude", "include"]] = None,
+        ai_translated: Optional[Union[str, Literal["exclude", "include"]]] = None,
         episode_number: Optional[int] = None,
-        foreign_parts_only: Union[str, Literal["exclude", "include"]] = None,
-        hearing_impaired: Union[str, Literal["exclude", "include"]] = None,
+        foreign_parts_only: Optional[Union[str, Literal["exclude", "include"]]] = None,
+        hearing_impaired: Optional[Union[str, Literal["exclude", "include"]]] = None,
         id: Optional[int] = None,
         imdb_id: Optional[int] = None,
         languages: Optional[str] = None,
-        machine_translated: Union[str, Literal["exclude", "include"]] = None,
+        machine_translated: Optional[Union[str, Literal["exclude", "include"]]] = None,
         moviehash: Optional[str] = None,
-        moviehash_match: Union[str, Literal["include", "only"]] = None,
+        moviehash_match: Optional[Union[str, Literal["include", "only"]]] = None,
         order_by: Optional[str] = None,
-        order_direction: Union[str, Literal["asc", "desc"]] = None,
+        order_direction: Optional[Union[str, Literal["asc", "desc"]]] = None,
         page: Optional[int] = None,
         parent_feature_id: Optional[int] = None,
         parent_imdb_id: Optional[int] = None,
@@ -193,8 +193,8 @@ class OpenSubtitles:
         query: Optional[str] = None,
         season_number: Optional[int] = None,
         tmdb_id: Optional[int] = None,
-        trusted_sources: Union[str, Literal["include", "only"]] = None,
-        type: Union[str, Literal["movie", "episode", "all"]] = None,
+        trusted_sources: Optional[Union[str, Literal["include", "only"]]] = None,
+        type: Optional[Union[str, Literal["movie", "episode", "all"]]] = None,
         user_id: Optional[int] = None,
         year: Optional[int] = None,
     ) -> SearchResponse:
