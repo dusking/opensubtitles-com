@@ -80,9 +80,7 @@ def show_credentials(args: argparse.Namespace):
 
 
 def download(args: argparse.Namespace):
-    """
-    Download a subtitle by file-id or moviehash
-    """
+    """Download a subtitle by file-id or movie-hash."""
     cfg = Config(args.config)
     api = _get_api(cfg)
 
@@ -105,7 +103,6 @@ def download(args: argparse.Namespace):
         print(f"Found {len(response.data)} subtitles, downloading the first into {srt}")
         with open(srt, "wb") as fp:
             fp.write(api.download(file_id=response.data[0].file_id))
-            
 
 
 def parse_args(argv: List[str]):

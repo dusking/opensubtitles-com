@@ -58,7 +58,10 @@ class OpenSubtitles:
         self.user_downloads_remaining = 0
 
     def send_api(
-        self, cmd: str, body: Optional[dict] = None, method: Optional[Union[str, Literal["GET", "POST", "DELETE"]]] = None
+        self,
+        cmd: str,
+        body: Optional[dict] = None,
+        method: Optional[Union[str, Literal["GET", "POST", "DELETE"]]] = None,
     ) -> dict:
         """Send the API request."""
         headers = {
