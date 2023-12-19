@@ -16,8 +16,8 @@ import argparse
 from typing import List
 from pathlib import Path
 
-from opensubtitlescom import Config, OpenSubtitles
-
+from opensubtitlescom import OpenSubtitles
+from .config import Config
 from .table import dict_to_pt
 
 logger = logging.getLogger(__name__)
