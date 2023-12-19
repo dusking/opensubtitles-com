@@ -66,6 +66,8 @@ def hide_secret(secret, show_chars=2):
     Returns:
         str: The password with hidden characters.
     """
+    if not secret:
+        return ""
     if len(secret) <= show_chars * 2:
         return secret  # Not enough characters to hide
 
@@ -89,7 +91,7 @@ def parse_args(argv: List[str]):
     """Parse command-line arguments for the OpenSubtitles CLI."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "--config", type=Path, default="~/.config/opensubtitlescom/cli.json", help="Path to the configuration file"
+        "--config", type=Path, default="~/.config/opensubtitlescom/config.json", help="Path to the configuration file"
     )
     parser.add_argument("-v", "--verbose", action="count", default=0, help="Increase verbosity level")
 
