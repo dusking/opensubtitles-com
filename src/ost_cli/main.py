@@ -16,8 +16,7 @@ import argparse
 from typing import List
 from pathlib import Path
 
-from opensubtitlescom import Config, OpenSubtitles
-
+from opensubtitlescom import Config, OpenSubtitles, FileUtils
 from .table import dict_to_pt
 
 logger = logging.getLogger(__name__)
@@ -34,11 +33,6 @@ def _get_api(cfg: Config):
     if cfg.username and cfg.password:
         subtitles.login(cfg.username, cfg.password)
     return subtitles
-
-
-def hello(args: argparse.Namespace):
-    """Just a stub command for the skeleton, this will be replaced in the next commit."""
-    print(f"Hello {args.name}!")
 
 
 def set_credentials(args: argparse.Namespace):
@@ -85,6 +79,35 @@ def show_credentials(args: argparse.Namespace):
     print(dict_to_pt(values, align="l"))
 
 
+def download(args: argparse.Namespace):
+    """
+    Download a subtitle by file-id or moviehash
+    """
+    cfg = Config(args.config)
+    api = _get_api(cfg)
+
+    if args.file_id:
+        srt = Path(args.file_id).with_suffix(".srt")
+        with open(srt, "wb") as fp:
+            fp.write(api.download(file_id=args.file_id))
+    elif args.file:
+        # Given a local file, search for the hash and download the first result,
+        # eg "ost download --file mymovie.mp4" will download the subtitle for
+        # mymovie.mp4 and save it as mymovie.srt
+        mov = Path(args.file)
+        srt = mov.with_suffix(".srt")
+        fu = FileUtils(mov)
+        h = fu.get_hash()
+        response = api.search(moviehash=h, languages=cfg.language)
+        if not response.data:
+            print(f"No subtitles found for {mov}")
+            return
+        print(f"Found {len(response.data)} subtitles, downloading the first into {srt}")
+        with open(srt, "wb") as fp:
+            fp.write(api.download(file_id=response.data[0].file_id))
+            
+
+
 def parse_args(argv: List[str]):
     """Parse command-line arguments for the OpenSubtitles CLI."""
     parser = argparse.ArgumentParser()
@@ -95,15 +118,16 @@ def parse_args(argv: List[str]):
 
     subparsers = parser.add_subparsers(dest="command")
 
-    hello_parser = subparsers.add_parser("hello", help=hello.__doc__)
-    hello_parser.set_defaults(command=hello)
-    hello_parser.add_argument("name")
-
     set_credentials_parser = subparsers.add_parser("set-cred", help=set_credentials.__doc__)
     set_credentials_parser.set_defaults(command=set_credentials)
 
     set_credentials_parser = subparsers.add_parser("show-cred", help=show_credentials.__doc__)
     set_credentials_parser.set_defaults(command=show_credentials)
+
+    download_parser = subparsers.add_parser("download", help=download.__doc__)
+    download_parser.set_defaults(command=download)
+    download_parser.add_argument("--file-id", type=int, help="Download a specific OSC file by ID")
+    download_parser.add_argument("--file", type=Path, help="Download the subtitles for a local file")
 
     return parser.parse_args(argv)
 
