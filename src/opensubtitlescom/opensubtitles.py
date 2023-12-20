@@ -93,18 +93,6 @@ class OpenSubtitles:
         except ValueError as ex:
             raise OpenSubtitlesException(f"Failed to parse login JSON response: {ex}")
 
-    def login_a(self, username: str, password: str):
-        """
-        Login request - needed to obtain session token.
-
-        Docs: https://opensubtitles.stoplight.io/docs/opensubtitles-api/73acf79accc0a-login
-        """
-        body = {"username": username, "password": password}
-        login_response = self.send_api("login", body)
-        self.token = login_response["token"]
-        self.user_downloads_remaining = login_response["user"]["allowed_downloads"]
-        return login_response
-
     def login(self, username: Optional[str] = None, password: Optional[str] = None):
         """
         Login request - needed to obtain session token.
