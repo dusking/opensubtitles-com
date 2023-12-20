@@ -17,7 +17,7 @@ from typing import List
 from pathlib import Path
 
 from opensubtitlescom import Config, OpenSubtitles, FileUtils
-from .table import dict_to_pt
+from .table import dict_to_pt, dicts_to_pt
 
 logger = logging.getLogger(__name__)
 
@@ -79,15 +79,31 @@ def show_credentials(args: argparse.Namespace):
     print(dict_to_pt(values, align="l"))
 
 
+def search(args: argparse.Namespace):
+    """Search for subtitles by various criteria."""
+    cfg = Config(args.config)
+    api = _get_api(cfg)
+
+    search_params = {"query": args.query, "languages": args.language or cfg.language}
+    response = api.search(**search_params)
+    all_results = []
+    for result in response.data:
+        all_results.append(
+            {"title": result.title, "imdb-id": result.imdb_id, "file-id": result.file_id, "file-name": result.file_name}
+        )
+    print(dicts_to_pt(all_results, sort="imdb-id", align="l"))
+
+
 def download(args: argparse.Namespace):
     """Download a subtitle by file-id or movie-hash."""
     cfg = Config(args.config)
     api = _get_api(cfg)
 
     if args.file_id:
-        srt = Path(args.file_id).with_suffix(".srt")
+        srt = Path(str(args.file_id)).with_suffix(".srt")
         with open(srt, "wb") as fp:
             fp.write(api.download(file_id=args.file_id))
+        print(f"Subtitles have been downloaded to: `{srt}`")
     elif args.file:
         # Given a local file, search for the hash and download the first result,
         # eg "ost download --file mymovie.mp4" will download the subtitle for
@@ -120,6 +136,11 @@ def parse_args(argv: List[str]):
 
     set_credentials_parser = subparsers.add_parser("show-cred", help=show_credentials.__doc__)
     set_credentials_parser.set_defaults(command=show_credentials)
+
+    search_parser = subparsers.add_parser("search", help=search.__doc__)
+    search_parser.set_defaults(command=search)
+    search_parser.add_argument("--query", type=str, help="Movie file name or text search")
+    search_parser.add_argument("--language", type=str, help="Language for subtitle search")
 
     download_parser = subparsers.add_parser("download", help=download.__doc__)
     download_parser.set_defaults(command=download)
