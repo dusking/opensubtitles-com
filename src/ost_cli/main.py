@@ -129,8 +129,9 @@ def parse_args(argv: List[str]):
     return parser.parse_args(argv)
 
 
-def main(argv):
+def main():
     """Parse command line arguments and executes the specified command."""
+    argv = sys.argv
     args = parse_args(argv[1:])
     logging.basicConfig(
         level=logging.WARNING - (args.verbose * 10),
@@ -144,4 +145,4 @@ def main(argv):
 
 
 if __name__ == "__main__":
-    sys.exit(main(sys.argv))
+    sys.exit(main())
