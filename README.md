@@ -95,7 +95,7 @@ Enter your password (leave blank to keep existing):
 Credentials set successfully
 ```
 
-Credentials are stored in the configuration file. 
+Credentials are stored in the configuration file.
 Now you can use CLI commands. For instance, to search for subtitles:
 
 ```bash
@@ -116,7 +116,7 @@ To download subtitles, use the download command with the specified file-id:
 $> ost download --file-id 4461104
 ```
 
-You can easily download subtitles for a local file using the CLI. 
+You can easily download subtitles for a local file using the CLI.
 The command will automatically search for the hash and download the first result. For example:
 
 ```bash
