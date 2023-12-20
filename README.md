@@ -63,9 +63,67 @@ latest_uploads = subtitles.discover_latest()
 latest_uploads_dict = latest_uploads.to_dict()
 ```
 
-
 For more information on available methods and options,
 refer to the [OpenSubtitles API documentation](https://api.opensubtitles.com/).
+
+## Using the CLI
+
+The library is accessible through the CLI, offering various options.
+To view all available commands, use the following:
+
+```bash
+$> ost -h
+positional arguments:
+  {set-cred,show-cred,search,download}
+    set-cred            Set the username and password in the config file.
+    show-cred           Show the username and password in the config file.
+    search              Search for subtitles by various criteria.
+    download            Download a subtitle by file-id or movie-hash.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --config CONFIG       Path to the configuration file
+  -v, --verbose         Increase verbosity level
+```
+
+Before executing CLI commands, set your opensubtitles user credentials using the set-cred command:
+
+```bash
+$> ost set-cred
+Enter your username (leave blank to keep existing):
+Enter your password (leave blank to keep existing):
+Credentials set successfully
+```
+
+Credentials are stored in the configuration file. 
+Now you can use CLI commands. For instance, to search for subtitles:
+
+```bash
+$> ost search --query "The Matrix"
++----+---------------------------+----------+---------+------------------------------------------------------------------------+
+| #  | title                     | imdb-id  | file-id | file-name                                                              |
++----+---------------------------+----------+---------+------------------------------------------------------------------------+
+| 1  | The Matrix                | 133093   | 4461104 | The.Matrix.1999.720p.HDDVD.DTS.x264-ESiR.ENG                           |
+| 2  | The Matrix                | 133093   | 4477776 | The.Matrix.1999.Subtitles.YIFY                                         |
+| 3  | The Matrix                | 133093   | 4465191 | The.Matrix.1999.BluRay.1080p.x264.DTS-WiKi.ENG                         |
+| 4  | The Matrix                | 133093   | 4483524 | The.Matrix.1999.1080p.BrRip.x264.YIFY.en                               |
+| 5  | The Matrix                | 133093   | 4480638 | The.Matrix.1999.1080p.BluRay.x264-CtrlHD.eng-sdh                       |
+```
+
+To download subtitles, use the download command with the specified file-id:
+
+```bash
+$> ost download --file-id 4461104
+```
+
+You can easily download subtitles for a local file using the CLI. 
+The command will automatically search for the hash and download the first result. For example:
+
+```bash
+$> ost download --file mymovie.mp4
+```
+
+This command will download the subtitle for "mymovie.mp4" and save it as "mymovie.srt".
 
 ## Running Tests
 
