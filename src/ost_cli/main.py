@@ -17,6 +17,7 @@ from typing import List
 from pathlib import Path
 
 from opensubtitlescom import Config, OpenSubtitles, FileUtils
+from opensubtitlescom.exceptions import OpenSubtitlesException
 from .table import dict_to_pt, dicts_to_pt
 
 logger = logging.getLogger(__name__)
@@ -37,15 +38,25 @@ def _get_api(cfg: Config):
 
 def set_credentials(args: argparse.Namespace):
     """Set the username and password in the config file."""
+    entered_username = input("Enter your username (leave blank to keep existing): ").strip()
+    entered_password = getpass.getpass("Enter your password (leave blank to keep existing): ").strip()
+    if not all([entered_username, entered_password]):
+        print("Missing new values, no changes have been made")
+        return
+
     cfg = Config(args.config)
-    entered_username = input("Enter your username (leave blank to keep existing): ")
-    if entered_username.strip():
+    if entered_username:
         cfg.username = entered_username
-    entered_password = getpass.getpass("Enter your password (leave blank to keep existing): ")
-    if entered_password.strip():
+    if entered_password:
         cfg.password = entered_password
-    if cfg.save():
-        print("Credentials set successfully")
+
+    try:
+        api = _get_api(cfg)
+        api.login(cfg.username, cfg.password)
+        if cfg.save():
+            print("Credentials set successfully!")
+    except OpenSubtitlesException:
+        print("Failed to authorize user (Check the provided username / password)")
 
 
 def hide_secret(secret, show_chars=2):
