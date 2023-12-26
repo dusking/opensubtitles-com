@@ -34,7 +34,7 @@ Here's an example of how to use it:
 from opensubtitlescom import OpenSubtitles
 
 # Initialize the OpenSubtitles client
-subtitles = OpenSubtitles(MY_API_KEY, "MyApp v1.0.0")
+subtitles = OpenSubtitles("MyApp v1.0.0", MY_API_KEY)
 
 # Log in (retrieve auth token)
 subtitles.login(MY_USERNAME, MY_PASSWORD)
