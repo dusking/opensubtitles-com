@@ -89,6 +89,15 @@ def show_credentials(args: argparse.Namespace):
     }
     print(dict_to_pt(values, align="l"))
 
+def user_info(args: argparse.Namespace):
+    """Print current user info."""
+    cfg = Config(args.config)
+    try:
+        api = _get_api(cfg)
+        response = api.user_info()
+        print(dict_to_pt(response["data"], align="l"))
+    except OpenSubtitlesException as ex:
+        print(f"Failed to retrieve user info: {ex.message}")
 
 def search(args: argparse.Namespace):
     """Search for subtitles by various criteria."""
@@ -147,6 +156,9 @@ def parse_args(argv: List[str]):
 
     set_credentials_parser = subparsers.add_parser("show-cred", help=show_credentials.__doc__)
     set_credentials_parser.set_defaults(command=show_credentials)
+
+    user_info_parser = subparsers.add_parser("user-info", help=user_info.__doc__)
+    user_info_parser.set_defaults(command=user_info)
 
     search_parser = subparsers.add_parser("search", help=search.__doc__)
     search_parser.set_defaults(command=search)
