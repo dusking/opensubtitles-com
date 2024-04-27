@@ -30,21 +30,20 @@ API_APP = f"{APP_NAME} v{APP_VER}"
 
 def _get_api(cfg: Config):
     """Create an OpenSubtitles API object and login with the credentials in the config file."""
-    subtitles = OpenSubtitles(API_APP, API_KEY)
+    subtitles = OpenSubtitles(API_APP, cfg.api_key or API_KEY)
     if cfg.username and cfg.password:
         subtitles.login(cfg.username, cfg.password)
     return subtitles
 
 
 def set_credentials(args: argparse.Namespace):
-    """Set the username and password in the config file."""
+    """Set the API key, username and password in the config file."""
+    entered_api_key = input("Enter your API key (leave blank to keep existing): ").strip()
     entered_username = input("Enter your username (leave blank to keep existing): ").strip()
     entered_password = getpass.getpass("Enter your password (leave blank to keep existing): ").strip()
-    if not all([entered_username, entered_password]):
-        print("Missing new values, no changes have been made")
-        return
-
     cfg = Config(args.config)
+    if entered_api_key:
+        cfg.api_key = entered_api_key
     if entered_username:
         cfg.username = entered_username
     if entered_password:
@@ -56,7 +55,7 @@ def set_credentials(args: argparse.Namespace):
         if cfg.save():
             print("Credentials set successfully!")
     except OpenSubtitlesException:
-        print("Failed to authorize user (Check the provided username / password)")
+        print("Failed to authorize user. Check the provided API key or username/password.")
 
 
 def hide_secret(secret, show_chars=2):
@@ -83,6 +82,7 @@ def show_credentials(args: argparse.Namespace):
     """Show the username and password in the config file."""
     cfg = Config(args.config)
     values = {
+        "api key": cfg.api_key,
         "username": cfg.username,
         "password": hide_secret(cfg.password, 2),
         "language": cfg.language,
