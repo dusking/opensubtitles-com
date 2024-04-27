@@ -113,6 +113,11 @@ def search(args: argparse.Namespace):
         )
     print(dicts_to_pt(all_results, sort="imdb-id", align="l"))
 
+def get_srt_name(args: argparse.Namespace, srt_name: str):
+    if args.output:
+        return Path(args.output)
+    else:
+        return Path(srt_name).with_suffix(".srt")
 
 def download(args: argparse.Namespace):
     """Download a subtitle by file-id or movie-hash."""
@@ -120,7 +125,7 @@ def download(args: argparse.Namespace):
     api = _get_api(cfg)
 
     if args.file_id:
-        srt = Path(str(args.file_id)).with_suffix(".srt")
+        srt = get_srt_name(args.file_id)
         with open(srt, "wb") as fp:
             fp.write(api.download(file_id=args.file_id))
         print(f"Subtitles have been downloaded to: `{srt}`")
@@ -129,7 +134,7 @@ def download(args: argparse.Namespace):
         # eg "ost download --file mymovie.mp4" will download the subtitle for
         # mymovie.mp4 and save it as mymovie.srt
         mov = Path(args.file)
-        srt = mov.with_suffix(".srt")
+        srt = get_srt_name(args, args.file)
         fu = FileUtils(mov)
         h = fu.get_hash()
         response = api.search(moviehash=h, languages=cfg.language)
@@ -145,7 +150,7 @@ def download(args: argparse.Namespace):
         if not response.data:
             print(f"No subtitles found for {args.query}")
             return
-        srt = Path(str(response.data[0].file_id)).with_suffix(".srt")
+        srt = get_srt_name(args, response.data[0].file_name)
         with open(srt, "wb") as fp:
             fp.write(api.download(file_id=response.data[0].file_id))
         print(f"Subtitles have been downloaded to: `{srt}`")
@@ -180,6 +185,7 @@ def parse_args(argv: List[str]):
     download_parser.add_argument("--file-id", type=int, help="Download a specific OSC file by ID")
     download_parser.add_argument("--file", type=Path, help="Download the subtitles for a local file")
     download_parser.add_argument("--query", type=str, help="Download the first subtitle matching the query")
+    download_parser.add_argument("--output", type=str, help="Output file name")
     return parser.parse_args(argv)
 
 
