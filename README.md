@@ -79,7 +79,7 @@ positional arguments:
     set-cred            Set the API key, username and password in the config file.
     show-cred           Show the username and password in the config file.
     search              Search for subtitles by various criteria.
-    download            Download a subtitle by file-id or movie-hash.
+    download            Download a subtitle by query, file-id or movie-hash.
 
 optional arguments:
   -h, --help            show this help message and exit
