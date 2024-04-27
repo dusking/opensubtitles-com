@@ -139,6 +139,16 @@ def download(args: argparse.Namespace):
         print(f"Found {len(response.data)} subtitles, downloading the first into {srt}")
         with open(srt, "wb") as fp:
             fp.write(api.download(file_id=response.data[0].file_id))
+    elif args.query:
+        # Given a search query, grab the subtitles for the first result
+        response = api.search(languages=cfg.language, query=args.query)
+        if not response.data:
+            print(f"No subtitles found for {args.query}")
+            return
+        srt = Path(str(response.data[0].file_id)).with_suffix(".srt")
+        with open(srt, "wb") as fp:
+            fp.write(api.download(file_id=response.data[0].file_id))
+        print(f"Subtitles have been downloaded to: `{srt}`")
 
 
 def parse_args(argv: List[str]):
@@ -169,7 +179,7 @@ def parse_args(argv: List[str]):
     download_parser.set_defaults(command=download)
     download_parser.add_argument("--file-id", type=int, help="Download a specific OSC file by ID")
     download_parser.add_argument("--file", type=Path, help="Download the subtitles for a local file")
-
+    download_parser.add_argument("--query", type=str, help="Download the first subtitle matching the query")
     return parser.parse_args(argv)
 
 
