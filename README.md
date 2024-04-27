@@ -55,6 +55,7 @@ srt = subtitles.download_and_parse(response.data[0])
 ```
 
 Here's another simple example:
+
 ```python
 # Get latest uploaded subtitles
 latest_uploads = subtitles.discover_latest()
@@ -75,7 +76,7 @@ To view all available commands, use the following:
 $> ost -h
 positional arguments:
   {set-cred,show-cred,search,download}
-    set-cred            Set the username and password in the config file.
+    set-cred            Set the API key, username and password in the config file.
     show-cred           Show the username and password in the config file.
     search              Search for subtitles by various criteria.
     download            Download a subtitle by file-id or movie-hash.
@@ -90,9 +91,10 @@ Before executing CLI commands, set your opensubtitles user credentials using the
 
 ```bash
 $> ost set-cred
+Enter your API key (leave blank to keep existing):
 Enter your username (leave blank to keep existing):
 Enter your password (leave blank to keep existing):
-Credentials set successfully
+Credentials set successfully!
 ```
 
 Credentials are stored in the configuration file.
@@ -130,7 +132,7 @@ This command will download the subtitle for "mymovie.mp4" and save it as "mymovi
 To execute the unit tests, use the following command:
 
 ```
-$ python -m unittest
+python -m unittest
 ```
 
 Make sure you have the necessary dependencies installed and a valid Python environment set up before running the tests.
