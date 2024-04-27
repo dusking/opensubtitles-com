@@ -1,12 +1,12 @@
 [project]
 name = "opensubtitlescom"
-version = "0.1.4"
+version = "0.1.5"
 description = "OpenSubtitles.com new REST API"
 readme = "README.md"
 requires-python = ">=3.7"
-license = {file = "LICENSE"}
+license = { file = "LICENSE" }
 keywords = ["opensubtitles"]
-classifiers=[
+classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
     "Intended Audience :: Developers",
@@ -21,10 +21,7 @@ classifiers=[
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
-dependencies = [
-    "requests",
-    "prettytable",
-]
+dependencies = ["requests", "prettytable"]
 
 [project.optional-dependencies]
 dev = [
