@@ -89,6 +89,7 @@ def show_credentials(args: argparse.Namespace):
     }
     print(dict_to_pt(values, align="l"))
 
+
 def user_info(args: argparse.Namespace):
     """Print current user info."""
     cfg = Config(args.config)
@@ -98,6 +99,7 @@ def user_info(args: argparse.Namespace):
         print(dict_to_pt(response["data"], align="l"))
     except OpenSubtitlesException as ex:
         print(f"Failed to retrieve user info: {ex.message}")
+
 
 def search(args: argparse.Namespace):
     """Search for subtitles by various criteria."""
@@ -113,11 +115,14 @@ def search(args: argparse.Namespace):
         )
     print(dicts_to_pt(all_results, sort="imdb-id", align="l"))
 
+
 def get_srt_name(args: argparse.Namespace, srt_name: str):
+    """Get the subtitle file name."""
     if args.output:
         return Path(args.output)
     else:
         return Path(srt_name).with_suffix(".srt")
+
 
 def download(args: argparse.Namespace):
     """Download a subtitle by file-id or movie-hash."""
