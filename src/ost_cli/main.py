@@ -55,7 +55,7 @@ def set_credentials(args: argparse.Namespace):
         if cfg.save():
             print("Credentials set successfully!")
     except OpenSubtitlesException:
-        print("Failed to authorize user. Check the provided API key or username/password.")
+        print("Failed to authorize user. Check the provided username/password.")
 
 
 def hide_secret(secret, show_chars=2):
@@ -82,11 +82,13 @@ def show_credentials(args: argparse.Namespace):
     """Show the username and password in the config file."""
     cfg = Config(args.config)
     values = {
-        "api key": cfg.api_key,
         "username": cfg.username,
         "password": hide_secret(cfg.password, 2),
         "language": cfg.language,
     }
+    if cfg.api_key:
+        # The API Key is not really a credential, but it is in the scope of it.
+        values["api key"] = cfg.api_key
     print(dict_to_pt(values, align="l"))
 
 
@@ -116,12 +118,15 @@ def search(args: argparse.Namespace):
     print(dicts_to_pt(all_results, sort="imdb-id", align="l"))
 
 
-def get_srt_name(args: argparse.Namespace, srt_name: str):
+def get_srt_output_file(args: argparse.Namespace):
     """Get the subtitle file name."""
     if args.output:
         return Path(args.output)
-    else:
-        return Path(srt_name).with_suffix(".srt")
+    if args.file_id:
+        return Path(str(args.file_id)).with_suffix(".srt")
+    if args.file:
+        return Path(args.file).with_suffix(".srt")
+    return None
 
 
 def download(args: argparse.Namespace):
@@ -129,25 +134,25 @@ def download(args: argparse.Namespace):
     cfg = Config(args.config)
     api = _get_api(cfg)
 
+    output_file = get_srt_output_file(args)
+
     if args.file_id:
-        srt = get_srt_name(args.file_id)
-        with open(srt, "wb") as fp:
+        with open(output_file, "wb") as fp:
             fp.write(api.download(file_id=args.file_id))
-        print(f"Subtitles have been downloaded to: `{srt}`")
+        print(f"Subtitles have been downloaded to: `{output_file}`")
     elif args.file:
         # Given a local file, search for the hash and download the first result,
         # eg "ost download --file mymovie.mp4" will download the subtitle for
         # mymovie.mp4 and save it as mymovie.srt
         mov = Path(args.file)
-        srt = get_srt_name(args, args.file)
         fu = FileUtils(mov)
         h = fu.get_hash()
         response = api.search(moviehash=h, languages=cfg.language)
         if not response.data:
             print(f"No subtitles found for {mov}")
             return
-        print(f"Found {len(response.data)} subtitles, downloading the first into {srt}")
-        with open(srt, "wb") as fp:
+        print(f"Found {len(response.data)} subtitles, downloading the first into {output_file}")
+        with open(output_file, "wb") as fp:
             fp.write(api.download(file_id=response.data[0].file_id))
     elif args.query:
         # Given a search query, grab the subtitles for the first result
@@ -155,10 +160,10 @@ def download(args: argparse.Namespace):
         if not response.data:
             print(f"No subtitles found for {args.query}")
             return
-        srt = get_srt_name(args, response.data[0].file_name)
-        with open(srt, "wb") as fp:
+        output_file = output_file or response.data[0].file_name
+        with open(output_file, "wb") as fp:
             fp.write(api.download(file_id=response.data[0].file_id))
-        print(f"Subtitles have been downloaded to: `{srt}`")
+        print(f"Subtitles have been downloaded to: `{output_file}`")
 
 
 def parse_args(argv: List[str]):

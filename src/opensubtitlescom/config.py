@@ -36,6 +36,7 @@ class Config:
         self._path: Path = (Path(path or DEFAULT_CONFIG_PATH)).expanduser()
         self.username: Optional[str] = None
         self.password: Optional[str] = None
+        self.api_key: Optional[str] = None
         self.language: str = "en"
 
         if self._path.exists():

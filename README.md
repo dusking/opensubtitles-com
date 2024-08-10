@@ -118,14 +118,33 @@ To download subtitles, use the download command with the specified file-id:
 $> ost download --file-id 4461104
 ```
 
+By default, the output file name will be the file ID.
+You can customize the output file name with the --output option:
+
+```bash
+$> ost download --file-id 4461104 --output my_subtitles.srt
+```
+
 You can easily download subtitles for a local file using the CLI.
-The command will automatically search for the hash and download the first result. For example:
+The command will automatically search for the hash and download the first result.
+For example, This following command will download the subtitle for "mymovie.mp4" and save it as "mymovie.srt".
 
 ```bash
 $> ost download --file mymovie.mp4
 ```
 
-This command will download the subtitle for "mymovie.mp4" and save it as "mymovie.srt".
+You can combine search and download in a single command:
+
+```bash
+$> ost download --query "The Matrix"
+```
+
+By default, the output file name will be based on the first search result.
+To specify a custom output file name, use the --output argument:
+
+```bash
+$> ost download --query "The Matrix" --output my_subtitles.srt
+```
 
 ## Running Tests
 
