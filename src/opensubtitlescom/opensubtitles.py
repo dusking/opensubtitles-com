@@ -49,7 +49,10 @@ class OpenSubtitles:
         :param user_agent: a string representing the user agent, like: "MyApp v0.0.1"
         """
         self._config = Config()
-        self.download_client = DownloadClient()
+        self.download_client = DownloadClient(
+            user_agent=user_agent,
+            api_key=api_key
+        )
         self.base_url = "https://api.opensubtitles.com/api/v1"
         self.token = None
         self.api_key = api_key
@@ -102,6 +105,11 @@ class OpenSubtitles:
         body = {"username": username or self._config.username, "password": password or self._config.password}
         login_response = self.send_api("login", body)
         self.token = login_response["token"]
+        # Update download client with new token
+        self.download_client.token = self.token
+        self.download_client.session.headers.update({
+            "authorization": self.token
+        })
         self.user_downloads_remaining = login_response["user"]["allowed_downloads"]
         return login_response
 
@@ -304,6 +312,8 @@ class OpenSubtitles:
         search_response_data = DownloadResponse(self.send_api("download", download_body))
         self.user_downloads_remaining = search_response_data.remaining
 
+        # Update download client with current token before downloading
+        self.download_client.token = self.token
         return self.download_client.get(search_response_data.link)
 
     def save_content_locally(self, content: bytes, filename: Optional[str] = None) -> str:
